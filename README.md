@@ -80,8 +80,9 @@ To set up the MySQL database that Django will use, run:
 To test that the database and MySQLdb (the python -> MySQL connector) are set up properly, run the follow in your virtualenv:
 
    python
-   >>> from MySQLdb import _mysql
-   >>> db = _mysql.connect("localhost","lvfu","lvfu","lvfu")
+   from MySQLdb import _mysql
+   db = _mysql.connect("localhost","lvfu","lvfu","lvfu")
+   <ctrl-d> to exit
 
 You shouldn't expect any output, but if you can execute these two commands without any errors, then python can talk to you new MySQL database, and you should be ready to run Django.
 
