@@ -95,3 +95,62 @@ Next, tell Django to set up the database by switching to your virtualenv, going 
     ./manage.py syncdb
 
 when prompted to create a super-user, choose whatever username and password you like. This will create a user account in Django's authentication system that you can use to access the administrative interface.
+
+## Eclipse setup
+
+If you plan to use eclipse as your editor, this section describes how to set it up to work with this project.
+
+### Eclipse plugins
+
+THIS SECTION MAY BE INCOMPLETE.
+
+To install plugins in Eclipse, go to Help -> Install New Software, click add, enter the name and URL of the plugin repository, wait for the list of plugins to load, then select the desired plugin(s) and proceed. These are the plugins you'll want to install:
+
+#### PyDev
+
+This is a Python IDE for eclipse.
+
+Repository URL: http://pydev.org/updates
+Package: PyDev
+
+#### AnyEdit
+
+Everybody hates hard tabs, but it's very difficult to configure Eclipse to never use them. This is a clever plugin that processes files each time you save them and converts hard tabs to spaces.
+
+Repository URL: http://andrei.gmxhome.de/eclipse/
+Package: Eclipse 3.5 - 3.8 plugins --> AnyEditTools
+
+Once installed, go to Window -> Preferences -> General -> Editors -> AnyEdit Tools. On the "Auto - Convert" tab, enable "Convert tabs <-> spaces" and select "Tabs to spaces". Then go to the Convert... tab and make sure the "Tab width/number of spaces for tab" value is set to 4.
+
+NOTE: If you prefer, you can make these settings project specific by following the Project setup instructions below, and then modifying the "AnyEdit Tools" section of the project preferences instead of the global preferences described in the previous paragraph.
+
+### Project setup
+
+First, (if you are using a virtualenv), set up a python interpreter that uses the virtualenv:
+
+* Window -> Preferences
+* Go to PyDev -> Interpreter - Python
+* Click the "New..." button on the top right
+* Fill in 'lvfu' for the name
+* Click the "Browse..." button next to the executable field
+* Select <your home directory>/.virtualenvs/lvfu/bin/python
+* Click "OK"
+* Make sure all of the files under the .virtualenv directory are selected, and also that the /usr/lib/python<VERSION> files are selected.
+* Click "OK"
+* Click "OK"
+
+Next, import the project into your workspace:
+
+* File -> Import
+* Choose "General -> ExistingProjects into Workspace"
+* Choose "Select root directory"
+* Click "Browse...", browse to the project's *parent* directory and hit OK
+* Select the project from the "Projects:" list
+* Click "Finish"
+
+Now, configure the project to use the virtualenv Python interpreter:
+
+* Right click on the project and choose Properties
+* Go to "PyDev Interpreter/Grammar"
+* In the "Interpreter" drop-down, choose "lvfu"
+* Click OK
