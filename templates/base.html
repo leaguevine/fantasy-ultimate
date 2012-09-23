@@ -1,0 +1,27 @@
+<!doctype html>
+
+
+{% block html_element %}
+{# This generates an <html> element that will have a class indicating the IE version #}
+{# (ie6, ie7, ie8, ie9) if loaded in IE. If you override this block to include #}
+{# includes/html_element.html with html_class="SOME CLASSES", then those classes #}
+{# will also be added to the <html> element regardless of the IE version. #}
+{% include "includes/html_element.html" %}
+{% endblock %}
+<head>
+  {% block metatags %}
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  {% endblock %}
+
+  <title>{% block title %}Fantasy Ultimate{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{% endblock %}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% block body %}{% endblock %}
+
+  {% block page_script %}{% endblock %}
+</body>
+</html>
