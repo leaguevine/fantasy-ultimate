@@ -1,0 +1,6 @@
+# Set this to your timezone. For a list of possible values, see http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
+TIME_ZONE = 'America/Los_Angeles'
+
+# Uncomment and fill in these values if you are using your own Facebook app, rather than the default one.
+#FACEBOOK_APP_ID = ''
+#FACEBOOK_APP_SECRET = ''

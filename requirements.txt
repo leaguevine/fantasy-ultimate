@@ -1,0 +1,14 @@
+# If some requirements fail to build for you on a Mac:
+# ARCHFLAGS="-arch i386 -arch x86_64" pip ..
+
+MySQL-python
+Django==1.4
+django-debug-toolbar==0.9.4
+django-social-auth==0.7.2
+
+# SUB-REQUIREMENTS
+
+# django-social-auth
+oauth2==1.5.211
+python-openid==2.2.5
+httplib2==0.7.4
