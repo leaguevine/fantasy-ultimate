@@ -96,6 +96,14 @@ Next, tell Django to set up the database by switching to your virtualenv, going 
 
 when prompted to create a super-user, choose whatever username and password you like. This will create a user account in Django's authentication system that you can use to access the administrative interface.
 
+### Test it out!
+
+At this point you should be able to test out your Django project. Switch to your virtualenv, and from the root of your project, run:
+
+    ./manage.py runserver
+
+Then in a browser, navigate to http://127.0.0.1:8000.
+
 ## Eclipse setup
 
 If you plan to use eclipse as your editor, this section describes how to set it up to work with this project.
