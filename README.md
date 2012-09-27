@@ -14,7 +14,7 @@ virtualenv is a very slick tool that is used to create sandboxed virtual python 
 
 On Ubuntu you can install all of the non-python dependencies by running:
 
-    sudo apt-get install nginx mysql-server python-setuptools python-virtualenv python-dev python-mysqldb git-core build-essential
+    sudo apt-get install nginx mysql-server libmysqlclient-dev python-setuptools python-virtualenv python-dev python-mysqldb git-core build-essential
 
 and then to ensure that you have a new enough version of pip (at least 1.1), run:
 
