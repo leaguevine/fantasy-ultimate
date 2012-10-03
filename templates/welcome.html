@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Fantasy Ultimate!</h1>
+<p>
+    <img src="https://graph.facebook.com/{{ social_auth.facebook.uid }}/picture?format=square"/>
+    Welcome, {{ user.first_name }}
+</p>
+<p>
+    Like Ultimate? Prove it!
+    <div class="fb-like" data-href="https://www.facebook.com/TheUltimatePage" data-send="false" data-width="450" data-show-faces="true"></div>
+</p>
+<p><a href="/">continue to play fantasy ultimate</a>
+
+{% include "includes/facebook.html" %}
+
+{% endblock %}
+
+{% block page_script %}
+{% endblock %}

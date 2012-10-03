@@ -31,6 +31,7 @@ DATABASES = {
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'UTC'
+TIME_ZONE = TIME_ZONE # Fix warning
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -93,6 +94,16 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.static',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'lvfu.context_processors.facebook',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -121,6 +132,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'social_auth'
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 #
@@ -142,10 +159,26 @@ SITE_PROTOCOL = 'http'
 #
 # Social auth settings
 #
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/welcome'
+
 FACEBOOK_APP_ID = ''
-FACEBOOK_APP_SECRET = ''
-FACEBOOK_EXTENDED_PERMISSIONS = 'email'
-FACEBOOK_PERMISSIONS = 'email'
+FACEBOOK_API_SECRET = ''
+FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'caching.backends.locmem.CacheClass',
+    }
+}
+
+# Try to enable caching counts..for only for a short time
+CACHE_COUNT_TIMEOUT = 10
+
+# The page that users must like in order to log in
+FACEBOOK_FAN_PAGE_ID = '300060247272'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

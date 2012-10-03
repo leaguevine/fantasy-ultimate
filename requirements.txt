@@ -4,7 +4,8 @@
 MySQL-python
 Django==1.4
 django-debug-toolbar==0.9.4
-django-social-auth==0.7.2
+django-social-auth==0.7.6
+django-cache-machine==0.6
 
 # SUB-REQUIREMENTS
 

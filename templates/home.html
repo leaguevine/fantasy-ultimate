@@ -2,4 +2,9 @@
 
 {% block body %}
 <h1>Fantasy Ultimate!</h1>
+<p>
+    <img src="https://graph.facebook.com/{{ social_auth.facebook.uid }}/picture?format=square"/>
+    Welcome, {{ user.first_name }}
+</p>
+<p>You're all set to play! Now find friends or create a league.</p>
 {% endblock %}

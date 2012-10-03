@@ -1,0 +1,30 @@
+<div id="fb-root"></div>
+<script>
+var fbInitialized = false;
+window.onFBInit = function(cb) {
+    if (fbInitialized) {
+        cb();
+    } else {
+        window._onFBInit = window._onFBInit || [];
+        window._onFBInit.push(cb);
+    }
+};
+
+var FB_PERMISSIONS = "{{ fb_permissions }}";
+window.fbAsyncInit = function() {
+  FB.init({appId: '{{ fb_app_id }}',
+      channelUrl: '{{ fb_channel_file }}',
+      oauth: true,
+      status: true,
+      cookie: true,
+      xfbml: true});
+  fbInitialized = true;
+  $.each(window._onFBInit || [], function(i, cb) { cb(); });
+};
+(function(d){
+   var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+   js = d.createElement('script'); js.id = id; js.async = true;
+   js.src = "//connect.facebook.net/en_US/all.js";
+   d.getElementsByTagName('head')[0].appendChild(js);
+}(document));
+</script>
