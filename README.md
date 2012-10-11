@@ -30,6 +30,22 @@ Next, install virtualenv by running:
 
     sudo pip install virtualenv
 
+Install MySQL:
+
+If you don't have it already, MySQL needs to be installed before the installing python dependencies below (otherwise will throw error for libmysqlclient-dev).  One way to install MySQL is via Homebrew.  If you don't have Homebrew, you can get it here: http://mxcl.github.com/homebrew/
+
+    brew install mysql
+
+Then set up and start MySQL via below commands (also provided in the Homebrew output after install passes):
+
+    unset TMPDIR
+
+    mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+
+    mysql.server start
+
+Then you can install python dependencies and set up database below.
+
 ### Non-python dependencies (Windows)
 
 Um, you're kind of on your own here...if you do get the environment up and running on windows, please keep track of what you need to do so we can include instructions here.
