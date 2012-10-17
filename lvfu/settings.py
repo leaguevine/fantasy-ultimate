@@ -19,6 +19,11 @@ if LIVEHOST:
     # Heroku settings: https://devcenter.heroku.com/articles/django#database-settings
     DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
+    # Import the Facebook App ID and Facebook API secret from our heroku config
+    # See here for how this works: https://devcenter.heroku.com/articles/config-vars#example
+    FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID'] 
+    FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
+
 else:
     DEBUG = True
 
@@ -34,6 +39,12 @@ else:
             'PORT': '',
         }
     }
+
+
+    # Set these in your local_settings.py file instead of here. For security
+    # reasons, they should never be committed to settings.py.
+    FACEBOOK_APP_ID = ''
+    FACEBOOK_API_SECRET = ''
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -182,8 +193,6 @@ SITE_PROTOCOL = 'http'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/welcome'
 
-FACEBOOK_APP_ID = ''
-FACEBOOK_API_SECRET = ''
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
