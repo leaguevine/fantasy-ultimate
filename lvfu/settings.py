@@ -21,10 +21,10 @@ if LIVEHOST:
 
     # Import the Facebook App ID and Facebook API secret from our heroku config
     # See here for how this works: https://devcenter.heroku.com/articles/config-vars#example
-    FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID'] 
+    FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID']
     FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
 
-    STATIC_ROOT = PROJECT_ROOT + '/staticfiles/'
+    STATIC_ROOT = PROJECT_ROOT + 'staticfiles/'
 else:
     DEBUG = True
 
