@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.views.generic import RedirectView
 
@@ -16,3 +17,8 @@ urlpatterns += patterns('lvfu.views',
     (r'^$', "index"),
     (r'^welcome$', "welcome"),
 )
+
+if settings.LIVEHOST:
+    urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    )
