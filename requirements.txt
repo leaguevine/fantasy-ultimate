@@ -1,8 +1,6 @@
 # If some requirements fail to build for you on a Mac:
 # ARCHFLAGS="-arch i386 -arch x86_64" pip ..
 
-distribute==0.6.28 # Required for MySQL-python
-MySQL-python
 Django==1.4.1
 django-debug-toolbar==0.9.4
 django-social-auth==0.7.6

@@ -75,6 +75,7 @@ and restart your shell. Now create your virtualenv (*not* as root, and *not* wit
 To install the project's python dependencies, first switch to your virtualenv (workon lvfu), then go to the root directory of the project and run:
 
     pip install -r requirements.txt
+    pip install -r local_requirements.txt
 
 You do *not* need to (and should not) run this as root.
 
