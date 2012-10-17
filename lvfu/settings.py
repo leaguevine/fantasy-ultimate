@@ -22,7 +22,7 @@ if LIVEHOST:
     # Import the Facebook App ID and Facebook API secret from our heroku config
     # See here for how this works: https://devcenter.heroku.com/articles/config-vars#example
     FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID'] 
-    FACEBOOK_APP_SECRET = os.environ['FACEBOOK_APP_SECRET']
+    FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
 
 else:
     DEBUG = True
@@ -44,7 +44,7 @@ else:
     # Set these in your local_settings.py file instead of here. For security
     # reasons, they should never be committed to settings.py.
     FACEBOOK_APP_ID = ''
-    FACEBOOK_APP_SECRET = ''
+    FACEBOOK_API_SECRET = ''
 
 TEMPLATE_DEBUG = DEBUG
 
