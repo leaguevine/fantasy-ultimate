@@ -1,9 +1,40 @@
 # Django settings for lvfu project.
 import os
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+import dj_database_url
 
-DEBUG = True
+
+# Test to see if local_settings exists. If it doesn't exist then this is on the live host.
+if os.path.isfile('lvfu/local_settings.py'):
+    LIVEHOST = False
+else:
+    LIVEHOST = True
+
+
+if LIVEHOST:
+    DEBUG = False
+
+    PROJECT_ROOT = '/app/'
+
+    # Heroku settings: https://devcenter.heroku.com/articles/django#database-settings
+    DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+
+else:
+    DEBUG = True
+
+    PROJECT_ROOT = '%s/..' % (os.path.abspath(os.path.dirname(__file__)))
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'lvfu',
+            'USER': 'lvfu',
+            'PASSWORD': 'lvfu',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
+    }
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -11,17 +42,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lvfu',
-        'USER': 'lvfu',
-        'PASSWORD': 'lvfu',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -120,7 +140,7 @@ ROOT_URLCONF = 'lvfu.urls'
 WSGI_APPLICATION = 'lvfu.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, '../templates/'),
+    os.path.join(PROJECT_ROOT, 'templates/'),
 )
 
 INSTALLED_APPS = (
