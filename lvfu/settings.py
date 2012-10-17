@@ -24,7 +24,7 @@ if LIVEHOST:
     FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID']
     FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
 
-    STATIC_ROOT = PROJECT_ROOT + 'staticfiles/'
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 else:
     DEBUG = True
 
