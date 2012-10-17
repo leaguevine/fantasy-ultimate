@@ -12,7 +12,7 @@ else:
 
 
 if LIVEHOST:
-    DEBUG = False
+    DEBUG = os.environ.get('DJANGO_DEBUG', '').lower() == "true"
 
     PROJECT_ROOT = '/app/'
 
