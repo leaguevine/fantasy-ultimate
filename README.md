@@ -179,3 +179,4 @@ Now, configure the project to use the virtualenv Python interpreter:
 * Go to "PyDev Interpreter/Grammar"
 * In the "Interpreter" drop-down, choose "lvfu"
 * Click OK
+
