@@ -14,7 +14,7 @@ virtualenv is a very slick tool that is used to create sandboxed virtual python 
 
 On Ubuntu you can install all of the non-python dependencies by running:
 
-    sudo apt-get install nginx mysql-server libmysqlclient-dev python-setuptools python-virtualenv python-dev python-mysqldb git-core build-essential
+    sudo apt-get install nginx postgresql libpq-dev python-setuptools python-virtualenv python-dev git-core build-essential
 
 and then to ensure that you have a new enough version of pip (at least 1.1), run:
 
@@ -22,7 +22,7 @@ and then to ensure that you have a new enough version of pip (at least 1.1), run
 
 ### Non-python dependencies (MacOS)
 
-THIS SECTION IS INCOMPLETE
+THIS SECTION NEEDS TO BE UPDATED WITH POSTGRESQL INSTRUCTIONS
 
 You will need to install XCode and go into the Downloads preferences pane and ensure that the command-line tools are installed.
 
@@ -83,25 +83,19 @@ We keep requirements.txt up-to-date with all required dependencies, so this is a
 
 ### Set up database
 
-To set up the MySQL database that Django will use, run:
+To set up the SQL database that Django will use, run:
 
-    mysql -u root -p
+    sudo -u postgres psql postgres
+
+    postgres=# \password postgres
     (enter password, which you can just leave blank if you like)
-
-    mysql> create database lvfu;
-    mysql> create user 'lvfu'@'localhost' identified by 'lvfu';
-    mysql> grant all privileges on *.* to 'lvfu'@'localhost' with grant option;
 
     <ctrl-d> to exit
 
-To test that the database and MySQLdb (the python -> MySQL connector) are set up properly, run the follow in your virtualenv:
+    sudo -u postgres createuser -SPDR lvfu
+    (when prompted for password, enter 'lvfu' twice)
 
-    python
-    >>> from MySQLdb import _mysql
-    >>> db = _mysql.connect("localhost","lvfu","lvfu","lvfu")
-    >>> <ctrl-d> to exit
-
-You shouldn't expect any output, but if you can execute these two commands without any errors, then python can talk to you new MySQL database, and you should be ready to run Django.
+    sudo -u postgres createdb -O lvfu lvfu
 
 ### Configure Django
 
