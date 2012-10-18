@@ -17,8 +17,3 @@ urlpatterns += patterns('lvfu.views',
     (r'^$', "index"),
     (r'^welcome$', "welcome"),
 )
-
-if settings.LIVEHOST:
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-    )
