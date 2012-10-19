@@ -12,7 +12,15 @@ urlpatterns = patterns('',
     url(r'', include('social_auth.urls')),
 )
 
-urlpatterns += patterns('lvfu.views',
+league_patterns = patterns(
+    'lvfu.webapp.views',
+    url(r'^$', 'league', name='league')
+)
+
+urlpatterns += patterns(
+    'lvfu.webapp.views',
     (r'^$', "index"),
     (r'^welcome$', "welcome"),
+    url(r'^newleague$', 'new_league', name='new_league'),
+    url(r'^league/(?P<pk>[0-9]+)', include(league_patterns))
 )

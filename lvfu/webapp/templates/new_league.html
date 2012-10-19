@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block body %}
+<h1>Fantasy Ultimate!</h1>
+<form action="{% url 'new_league' %}" method="POST">
+    {% csrf_token %}
+    <label for="title">League name:</label>
+    <input id="title" name="title" type="text"/>
+    <input type="submit" value="Create League" disabled="true"/>
+</form>
+{% endblock %}
+
+{% block page_script %}
+<script src="{{ STATIC_URL }}js/libs/jquery.textchange.js"></script>
+<script>
+$(function() {
+    $("#title").on("hastext", function() {
+        $('input[type="submit"]').attr("disabled", false);
+    });
+    $("#title").on("notext", function() {
+        $('input[type="submit"]').attr("disabled", true);
+    });
+});
+</script>
+{% endblock %}

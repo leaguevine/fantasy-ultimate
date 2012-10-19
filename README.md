@@ -107,6 +107,10 @@ Next, tell Django to set up the database by switching to your virtualenv, going 
 
 when prompted to create a super-user, choose whatever username and password you like. This will create a user account in Django's authentication system that you can use to access the administrative interface.
 
+Finally, run the South migrations to update the database to the latest schema:
+
+    ./manage.py migrate
+
 ### Test it out!
 
 At this point you should be able to test out your Django project. Switch to your virtualenv, and from the root of your project, run:

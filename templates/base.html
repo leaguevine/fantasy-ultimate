@@ -1,4 +1,4 @@
-<!doctype html>
+{% load webapp_helpers %}<!doctype html>
 {% block html_element %}
 {# This generates an <html> element that will have a class indicating the IE version #}
 {# (ie6, ie7, ie8, ie9) if loaded in IE. If you override this block to include #}
@@ -21,6 +21,10 @@
   {% block body %}{% endblock %}
 
   <script src="http{% if request.is_secure %}s{% endif %}://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery{% if not debug %}.min{% endif %}.js"></script>
+  <script>window.jQuery || document.write("<script src='{{ STATIC_URL }}js/libs/jquery-1.7.1{% if not debug %}.min{% endif %}.js'>\x3C/script>")</script>
+
+  {% block includes %}{% endblock %}
+
   {% block page_script %}{% endblock %}
 </body>
 </html>

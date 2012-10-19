@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block body %}
+<h1>{{ app_data.league.title }}</h1>
+<p>
+    <h2>Members</h2>
+    <ul>
+       {% for m in members %}
+           <li><img width="25" height="25" src="{{ m.profile_pic }}"/> {% if m == member %}You{% else %}{{ m.full_name }}{% endif %}</li>
+       {% endfor %}
+    </ul>
+    <a href="#" class="js-invite-friends">Invite friends</a>
+
+    <form id="invite-form" method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="action" name="action" value="invite"/>
+        <input type="hidden" id="uids" name="uids" value=""/>
+        <input type="hidden" id="first-names" name="first_names" value=""/>
+        <input type="hidden" id="last-names" name="last_names" value=""/>
+    </form>
+{% endblock %}
+
+{% block includes %}
+    {% include "includes/facebook.html" %}
+{% endblock %}
+
+{% block page_script %}
+<script src="{{ STATIC_URL}}js/libs/underscore.js"></script>
+<script>
+    (function() {
+        var existingMembers = [
+            {% for m in members %}
+                {{ m.fb_uid }},
+            {% endfor %}
+        ];
+
+        $(".js-invite-friends").click(function(e) {
+            e.preventDefault();
+
+            FB.ui({
+                method: 'apprequests',
+                title: 'Select Friends to Invite',
+                message: "Hey! I've invited you into my fantasy ultimate league. Come play!",
+                exclude_ids: existingMembers,
+                data: {{ league.id }}
+            }, function(response) {
+                if (response && response.to && response.to.length > 0) {
+                    FB.api('/', {
+                        ids: response.to.join(','),
+                        fields: 'first_name,last_name'
+                    }, function(response) {
+                        var uids = [];
+                        var firstNames = [];
+                        var lastNames = [];
+                        _.each(response, function(friend) {
+                            uids.push(friend.id);
+                            firstNames.push(friend.first_name);
+                            lastNames.push(friend.last_name);
+                        });
+                        $("#uids").val(uids.join(","));
+                        $("#first-names").val(firstNames.join(","));
+                        $("#last-names").val(lastNames.join(","));
+                        $("#invite-form").submit();
+                    });
+                }
+            });
+        });
+    })();
+</script>
+{% endblock %}

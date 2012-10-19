@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block body %}
+<h1>Fantasy Ultimate!</h1>
+<p>
+    <img src="https://graph.facebook.com/{{ social_auth.facebook.uid }}/picture?format=square"/>
+    Welcome, {{ user.first_name }}
+</p>
+<p>
+    You're not in any leagues.
+    <a href="{% url 'new_league' %}">Create a league</a> and invite your friends</li>
+</p>
+{% endblock %}

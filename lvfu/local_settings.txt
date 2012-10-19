@@ -4,3 +4,7 @@ TIME_ZONE = 'America/Los_Angeles'
 # Uncomment and fill these in with values from the Facebook application
 #FACEBOOK_APP_ID = ''
 #FACEBOOK_APP_SECRET = ''
+
+# Uncomment and fill these in with values from the Leaguevine application
+#LEAGUEVINE_CLIENT_ID = ''
+#LEAGUEVINE_CLIENT_SECRET = ''
