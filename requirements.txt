@@ -1,16 +1,20 @@
 # If some requirements fail to build for you on a Mac:
 # ARCHFLAGS="-arch i386 -arch x86_64" pip ..
 
+psycopg2==2.4.5
+
 Django==1.4.1
 django-debug-toolbar==0.9.4
 django-social-auth==0.7.6
 django-cache-machine==0.6
 django-storages==1.1.4
 boto==2.3.0
+South==0.7.6
+celery==3.0.11
+django-celery==3.0.11
 
 # For Heroku
 dj-database-url==0.2.1
-psycopg2==2.4.5
 
 # SUB-REQUIREMENTS
 

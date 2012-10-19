@@ -1,42 +1,6 @@
 from datetime import date, timedelta
-import json
-import urllib
-import urllib2
 
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-
-from social_auth.db.django_models import UserSocialAuth
-
-from fb import get_app_access_token
-
-
-@login_required
-def welcome(request):
-    try:
-        uid = request.user.social_auth.get(provider='facebook').uid
-    except UserSocialAuth.DoesNotExist:
-        return render("/")
-
-    args = {
-        'access_token': get_app_access_token(),
-        'limit': 0
-    }
-    url = 'https://graph.facebook.com/%s/likes?%s' % (uid, urllib.urlencode(args))
-    likes = json.load(urllib2.urlopen(url))['data']
-    if settings.FACEBOOK_FAN_PAGE_ID in [l['id'] for l in likes]:
-        return HttpResponseRedirect("/")
-    else:
-        return render(request, "welcome.html")
-
-
-def index(request):
-    if request.user.is_authenticated():
-        return render(request, "home.html")
-    else:
-        return render(request, "login.html")
+from django.http import HttpResponse
 
 
 def fb_channel(request):

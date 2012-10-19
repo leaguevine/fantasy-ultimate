@@ -13,18 +13,17 @@ else:
 
 S3_URL = 'https://s3.amazonaws.com/lvfantasyultimate/'
 USE_STATICFILES = False
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 if LIVEHOST:
-    DEBUG = False
-
-    PROJECT_ROOT = '/app/'
+    DEBUG = os.environ.get('DJANGO_DEBUG', '').lower() == "true"
 
     # Heroku settings: https://devcenter.heroku.com/articles/django#database-settings
     DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
     # Import the Facebook App ID and Facebook API secret from our heroku config
     # See here for how this works: https://devcenter.heroku.com/articles/config-vars#example
-    FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID'] 
+    FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID']
     FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
 
     # Django storages
@@ -35,14 +34,12 @@ if LIVEHOST:
     # URL prefix for static files.
     STATIC_URL = S3_URL
 
-else:
+else: # Localhost
     DEBUG = True
-
-    PROJECT_ROOT = '%s/..' % (os.path.abspath(os.path.dirname(__file__)))
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'lvfu',
             'USER': 'lvfu',
             'PASSWORD': 'lvfu',
@@ -52,7 +49,12 @@ else:
     }
 
     # URL prefix for static files.
+    STATIC_ROOT = os.path.join(PROJECT_ROOT, '../static-release/')
+    STATICFILES_DIRS = (
+        os.path.join(PROJECT_ROOT, '../static/'),
+    )
     STATIC_URL = '/static/'
+    ADMIN_MEDIA_PREFIX = 'http://localhost:8000/static/admin/'
 
     # Set these in your local_settings.py file instead of here. For security
     # reasons, they should never be committed to settings.py.
@@ -109,20 +111,6 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = ''
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "static/")
-ADMIN_MEDIA_PREFIX = 'http://localhost:8000/static/admin/'
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
@@ -167,7 +155,7 @@ ROOT_URLCONF = 'lvfu.urls'
 WSGI_APPLICATION = 'lvfu.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, 'templates/'),
+    os.path.join(PROJECT_ROOT, '../templates/'),
 )
 
 INSTALLED_APPS = (
@@ -181,6 +169,13 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'social_auth',
     'storages',
+    'south',
+    'djcelery',
+    'lvfu.account',
+    'lvfu.fantasy',
+    'lvfu.lv',
+    'lvfu.utils',
+    'lvfu.webapp'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -209,8 +204,31 @@ SITE_PROTOCOL = 'http'
 #
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/welcome'
+SOCIAL_AUTH_USER_MODEL = 'account.User'
 
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+
+LEAGUEVINE_CLIENT_ID = ''
+LEAGUEVINE_CLIENT_SECRET = ''
+
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_RESULT_BACKEND = "amqp"
+# Currently, all of our tasks don't need a result, so make sure
+# This is set.
+CELERY_IGNORE_RESULT = True
+CELERY_TASK_RESULT_EXPIRES = 3600
+
+# This is useful to enable for unit tests or in development
+# When you don't want to deal with running celery
+CELERY_ALWAYS_EAGER = DEBUG
+
+
+# Celery
+try:
+    import djcelery
+    djcelery.setup_loader()
+except ImportError:
+    pass
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
@@ -283,8 +301,6 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 if USE_STATICFILES:
     STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 AWS_STORAGE_BUCKET_NAME = 'lvfantasyultimate'
-GZIP_CONTENT_TYPES = ('text/css', 'application/javascript', 'application/x-javascript', 'text/html')
-AWS_IS_GZIPPED = True
 AWS_HEADERS = {
     'Cache-Control': 'max-age=3600',
 }
