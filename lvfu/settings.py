@@ -1,5 +1,6 @@
 # Django settings for lvfu project.
 import os
+import sys
 
 import dj_database_url
 
@@ -10,6 +11,8 @@ if os.path.isfile('lvfu/local_settings.py'):
 else:
     LIVEHOST = True
 
+S3_URL = 'https://s3.amazonaws.com/lvfantasyultimate/'
+USE_STATICFILES = False
 
 if LIVEHOST:
     DEBUG = False
@@ -23,6 +26,14 @@ if LIVEHOST:
     # See here for how this works: https://devcenter.heroku.com/articles/config-vars#example
     FACEBOOK_APP_ID = os.environ['FACEBOOK_APP_ID'] 
     FACEBOOK_API_SECRET = os.environ['FACEBOOK_API_SECRET']
+
+    # Django storages
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    USE_STATICFILES = True
+
+    # URL prefix for static files.
+    STATIC_URL = S3_URL
 
 else:
     DEBUG = True
@@ -40,11 +51,19 @@ else:
         }
     }
 
+    # URL prefix for static files.
+    STATIC_URL = '/static/'
 
     # Set these in your local_settings.py file instead of here. For security
     # reasons, they should never be committed to settings.py.
     FACEBOOK_APP_ID = ''
     FACEBOOK_API_SECRET = ''
+
+    # Django storages
+    AWS_ACCESS_KEY_ID = '' # To use this to upload files to S3, this should be defined in local_settings.py
+    AWS_SECRET_ACCESS_KEY = '' # To use this to upload files to S3, this should be defined in local_settings.py
+    if 'collectstatic' in sys.argv:
+        USE_STATICFILES = True
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -94,11 +113,8 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static/")
+ADMIN_MEDIA_PREFIX = 'http://localhost:8000/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -163,7 +179,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'social_auth'
+    'social_auth',
+    'storages',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -258,6 +275,19 @@ LOGGING = {
     }
 }
 
+
+
+##############################################################################
+# Django-storages
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+if USE_STATICFILES:
+    STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+AWS_STORAGE_BUCKET_NAME = 'lvfantasyultimate'
+GZIP_CONTENT_TYPES = ('text/css', 'application/javascript', 'application/x-javascript', 'text/html')
+AWS_IS_GZIPPED = True
+AWS_HEADERS = {
+    'Cache-Control': 'max-age=3600',
+}
 
 try:
     from local_settings import *
