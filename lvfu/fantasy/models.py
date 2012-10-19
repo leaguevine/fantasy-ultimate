@@ -37,6 +37,9 @@ class Event(models.Model):
     class Meta:
         unique_together = ('type', 'lv_id')
 
+    def __unicode__(self):
+        return self.title
+
 
 class LeagueManager(models.Manager):
     def get_all_for_user(self, user):
@@ -65,6 +68,9 @@ class League(models.Model):
     extra = JSONField(blank=True)
 
     objects = LeagueManager()
+
+    def __unicode__(self):
+        return "%s/%s" % (str(self.event), self.title)
 
     @models.permalink
     def get_absolute_url(self):
