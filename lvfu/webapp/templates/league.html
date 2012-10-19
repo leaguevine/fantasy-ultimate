@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_webapp.html" %}
 {% load url from future %}
 
 {% block body %}
@@ -11,6 +11,11 @@
        {% endfor %}
     </ul>
     <a href="#" class="js-invite-friends">Invite friends</a>
+
+    <h2>Players</h2>
+    <ul class="js-players-list">
+        <li>Loading...</li>
+    </ul>
 
     <form id="invite-form" method="POST">
         {% csrf_token %}
@@ -26,7 +31,7 @@
 {% endblock %}
 
 {% block page_script %}
-<script src="{{ STATIC_URL}}js/libs/underscore.js"></script>
+{{ block.super }}
 <script>
     (function() {
         var existingMembers = [
@@ -64,6 +69,39 @@
                         $("#invite-form").submit();
                     });
                 }
+            });
+        });
+
+        LV.getList("/{% if league.event.type == 'tournament' %}tournament_{% endif %}teams/", {
+            {% if league.event.type == 'tournament' %}
+              fields: [ 'team' ],
+              extraParams: { tournament_ids: [ {{ league.event.lv_id  }} ] }
+            {% else %}
+              fields: [ 'id', 'name' ],
+              extraParams: { season_id: {{ league.event.lv_id  }} }
+            {% endif %}
+        }).getAll(function(teams) {
+            LV.getList("/team_players/", {
+                fields: [ 'player', 'team_id' ],
+                {% if league.event.type == 'tournament' %}
+                  extraParams: { team_ids: _.pluck(_.pluck(teams, 'team'), 'id') }
+                {% else %}
+                  extraParams: { team_ids: _.pluck(teams, 'id') }
+                {% endif %}
+            }).getAll(function(players) {
+                var teamMap = {};
+                _.each(teams, function(t) {
+                    {% if league.event.type == 'tournament' %}
+                      teamMap[t.team_id] = t.team.name;
+                    {% else %}
+                      teamMap[t.id] = t.name;
+                    {% endif %}
+                });
+
+                var html = _.reduce(players, function(html, player) {
+                    return html + "<li>" + player.player.first_name + " " + player.player.last_name + " (" + teamMap[player.team_id] + ")</li>";
+                }, '');
+                $(".js-players-list").html(html);
             });
         });
     })();

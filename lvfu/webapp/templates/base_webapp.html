@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load webapp_helpers %}
+
+{% block page_script %}
+{{ block.super }}
+
+<script>
+window.app_data = {
+    {% for key, data in app_data.items %}
+        "{{ key }}": {{ data|fix_json|safe }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+</script>
+
+<script src="{{ STATIC_URL}}js/libs/underscore.js"></script>
+<script src="{{ STATIC_URL}}js/lv.js?q=2012101907"></script>
+{% endblock %}

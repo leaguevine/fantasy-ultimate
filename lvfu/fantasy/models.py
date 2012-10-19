@@ -12,6 +12,32 @@ from ..utils.site import site_join_url
 from ..utils.validators import choice_validator
 
 
+class Event(models.Model):
+    """
+    An event in the real world that fantasy leagues can be tied to
+    """
+    TYPE_CHOICES = (
+        (ur'season', u'Season'),
+        (ur'tournament', u'Tournament')
+    )
+    TYPES = [t[0] for t in TYPE_CHOICES]
+
+    type = models.CharField(max_length=16,
+                            default='tournament',
+                            choices=TYPE_CHOICES,
+                            validators=[choice_validator(TYPE_CHOICES)])
+    # The ID of the event in Leaguevine
+    lv_id = models.IntegerField()
+
+    title = models.CharField(max_length=256)
+    description = models.CharField(max_length=2048, blank=True, default='')
+
+    extra = JSONField(blank=True)
+
+    class Meta:
+        unique_together = ('type', 'lv_id')
+
+
 class LeagueManager(models.Manager):
     def get_all_for_user(self, user):
         user = User.objects.get_user(user)
@@ -22,19 +48,8 @@ class League(models.Model):
     """
     A fantasy league
     """
-    # The type of event that this league corresponds to
-    EVENT_TYPE_CHOICES = (
-        (ur'season', u'Season'),
-        (ur'tournament', u'Tournament')
-    )
-    EVENT_TYPES = [t[0] for t in EVENT_TYPE_CHOICES]
-
-    event_type = models.CharField(max_length=16,
-                                  default='season',
-                                  choices=EVENT_TYPE_CHOICES,
-                                  validators=[choice_validator(EVENT_TYPE_CHOICES)])
-    # The ID of the event in Leaguevine
-    lv_event_id = models.IntegerField()
+    # Can't really be null, just needed for migration
+    event = models.ForeignKey(Event, null=True)
 
     creation_time = models.DateTimeField(default=datetime.utcnow,
                                          db_index=True,

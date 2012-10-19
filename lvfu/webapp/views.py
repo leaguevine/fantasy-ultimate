@@ -11,8 +11,9 @@ from django.views.decorators.http import require_http_methods
 
 from social_auth.db.django_models import UserSocialAuth
 
+from .. import lv
 from ..fb import get_app_access_token
-from ..fantasy.models import League, Member
+from ..fantasy.models import Event, League, Member
 
 
 @login_required
@@ -45,6 +46,15 @@ def index(request):
         return render(request, "login.html")
 
 
+def render_app(request, template, context=None):
+    context = context or {}
+
+    app_data = context.setdefault('app_data', {})
+    app_data['lvat'] = "'%s'" % lv.get_access_token()
+
+    return render(request, template, context)
+
+
 def render_league(request, league_pk, template, context=None):
     league = get_object_or_404(League, pk=league_pk)
     try:
@@ -56,18 +66,21 @@ def render_league(request, league_pk, template, context=None):
     context['league'] = league
     context['member'] = member
 
-    return render(request, template, context)
+    return render_app(request, template, context)
 
 
 @require_http_methods(['GET', 'POST'])
 @login_required
 def new_league(request):
     if request.method == 'GET':
-        return render(request, 'new_league.html')
+        return render_app(request, 'new_league.html', {
+            'events': Event.objects.all()
+        })
     else:
         title = request.POST['title']
-        league = League.objects.create(title=title,
-                                       lv_event_id=20063,
+        event_id = int(request.POST['event_id'])
+        league = League.objects.create(event=Event.objects.get(pk=event_id),
+                                       title=title,
                                        creator=request.user)
         return redirect(league)
 
@@ -84,7 +97,7 @@ def league(request, pk):
     member = member[0]
 
     if request.method == 'GET':
-        return render(request, 'league.html', {
+        return render_app(request, 'league.html', {
             'league': league,
             'member': member,
             'members': members
