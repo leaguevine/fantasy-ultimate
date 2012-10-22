@@ -100,8 +100,7 @@ def my_team(request):
         player_ids = [int(request.POST['player_%d' % i]) for i in range(7)]
 
         # Fetch a copy of the player objects to store in the JSON fields
-        request = lv.GetListRequest("/players/", player_ids=lv.make_list_qp(player_ids))
-        players = request.get_all()
+        players = lv.GetListRequest("/players/", player_ids=lv.make_list_qp(player_ids)).get_all()
 
         if member:
             if member.has_team:
