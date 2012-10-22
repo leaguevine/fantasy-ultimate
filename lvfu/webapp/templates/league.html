@@ -6,6 +6,9 @@
     .ui-leaderboard {
       width: 500px;
     }
+    .ui-my-team td {
+      background: #fffbcc !important;
+    }
 </style>
 {% endblock %}
 
@@ -18,6 +21,7 @@
 
     <div class="tab-content">
         <div class="tab-pane" id="all">
+            <h1 class="js-rank-line hide">You are currently ranked #<span class="js-rank"></span></h1>
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -43,18 +47,21 @@
             </table>
         </div>
         <div class="tab-pane" id="friends">
-            <table class="table table-striped table-bordered js-friends hide">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Team</th>
-                        <th>Points</th>
-                        <th>Owner</th>
-                    </tr>
-                </thead>
-                <tbody class="js-friends-body">
-                </tbody>
-            </table>
+            <div class="js-friends hide">
+                <h1 class="js-rank-line hide">You are #<span class="js-rank"></span> of your friends</h1>
+                <table class="table table-striped table-bordered js-friends">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Team</th>
+                            <th>Points</th>
+                            <th>Owner</th>
+                        </tr>
+                    </thead>
+                    <tbody class="js-friends-body">
+                    </tbody>
+                </table>
+            </div>
             <div class="js-friends-loading">Loading...</div>
             <div class="js-no-friends hide">None of your friends are playing :(</div>
             <div class="js-fb-not-connected hide">Unable to get your list of friends. Are you logged in to Facebook?</div>
@@ -72,6 +79,18 @@
 {{ block.super }}
 <script>
 $(function() {
+    var setRank = function(paneEl) {
+        var myTeam = paneEl.find(".js-my-team");
+        if (myTeam.length > 0) {
+            var rank = paneEl.find(".js-team-row").index(myTeam) + 1;
+            var rankLine = paneEl.find(".js-rank-line");
+            rankLine.find(".js-rank").text(rank);
+            rankLine.show();
+        };
+    };
+
+    setRank($("#all"));
+
     $("#tabs a").click(function (e) {
       e.preventDefault();
       $(this).tab('show');
@@ -101,7 +120,8 @@ $(function() {
                     $(".js-friends-loading").hide();
                     if (els.length > 0) {
                         els.appendTo($(".js-friends-body"));
-                        $(".js-friends").show();j
+                        $(".js-friends").show();
+                        setRank($("#friends"));
                     } else {
                         $(".js-no-friends").show();
                     }

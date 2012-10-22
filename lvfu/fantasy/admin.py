@@ -1,10 +1,23 @@
+from django import forms
 from django.contrib import admin
+
+from ..utils.forms import JSONFormField
 
 from models import Event, League, Member, Team, Player
 from utils import update_player_scores
 
 
+def admin_form(_model):
+    class MyForm(forms.ModelForm):
+        extra = JSONFormField(required=False)
+
+        class Meta:
+            model = _model
+    return MyForm
+
+
 class EventAdmin(admin.ModelAdmin):
+    form = admin_form(Event)
     list_display = (
         'id',
         'type',
@@ -15,6 +28,7 @@ class EventAdmin(admin.ModelAdmin):
 
 
 class LeagueAdmin(admin.ModelAdmin):
+    form = admin_form(League)
     list_display = (
         'id',
         'creator',
@@ -39,6 +53,7 @@ class LeagueAdmin(admin.ModelAdmin):
 
 
 class MemberAdmin(admin.ModelAdmin):
+    form = admin_form(Member)
     list_display = (
         'id',
         'status',
@@ -53,6 +68,7 @@ class MemberAdmin(admin.ModelAdmin):
 
 
 class TeamAdmin(admin.ModelAdmin):
+    form = admin_form(Team)
     list_display = (
         'id',
         'league',
@@ -63,6 +79,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class PlayerAdmin(admin.ModelAdmin):
+    form = admin_form(Player)
     list_display = (
         'id',
         'team',
