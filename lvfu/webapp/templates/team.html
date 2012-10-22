@@ -21,7 +21,7 @@
         <tbody>
             {% for player in member.team.all_players %}
                 <tr>
-                    <td>{{ player.extra.lv_player.first_name }} {{ player.extra.lv_player.last_name }}</td>
+                    <td><a target="_blank" href="{{ player.extra.lv_player.leaguevine_url }}">{{ player.extra.lv_player.first_name }} {{ player.extra.lv_player.last_name }}</a></td>
                     <td>{{ player.score }}</td>
                 </tr>
             {% endfor %}
