@@ -63,6 +63,8 @@ else: # Localhost
     # reasons, they should never be committed to settings.py.
     FACEBOOK_APP_ID = ''
     FACEBOOK_API_SECRET = ''
+    LEAGUEVINE_CLIENT_ID = ''
+    LEAGUEVINE_CLIENT_SECRET = ''
 
     # Django storages
     AWS_ACCESS_KEY_ID = '' # To use this to upload files to S3, this should be defined in local_settings.py
@@ -211,9 +213,6 @@ SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/'
 SOCIAL_AUTH_USER_MODEL = 'account.User'
 
 FACEBOOK_EXTENDED_PERMISSIONS = ['email']
-
-LEAGUEVINE_CLIENT_ID = ''
-LEAGUEVINE_CLIENT_SECRET = ''
 
 CELERY_DISABLE_RATE_LIMITS = True
 CELERY_RESULT_BACKEND = "amqp"
