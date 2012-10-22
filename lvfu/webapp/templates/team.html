@@ -2,6 +2,13 @@
 
 {% block page_css %}
 <style>
+    .alert {
+      position: relative;
+      display: inline-block;
+    }
+    .ui-fb-like-container {
+      margin-top: 5px;
+    }
     .ui-roster {
       width: 500px;
     }
@@ -9,6 +16,16 @@
 {% endblock %}
 
 {% block body_content %}
+{% if created %}
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    You've created your team, now tell your friends by clicking LIKE:
+    <div class="ui-fb-like-container">
+        <div class="fb-like" data-send="false" data-width="450" data-show-faces="true"></div>
+    </div>
+</div>
+{% endif %}
+
 <div class="ui-roster">
     <h2>Your roster:</h3>
     <table class="table table-striped table-bordered">
@@ -28,4 +45,17 @@
         </tbody>
     </table>
 </p>
+{% endblock %}
+
+{% block includes %}
+{# Include this before Facebook to be sure it is set when the SDK loads #}
+<script>
+    (function() {
+        var a = document.createElement("a");
+        a.href = "/";
+        $(".fb-like").attr("data-href", a.href);
+    })();
+</script>
+
+{% include "includes/facebook.html" %}
 {% endblock %}

@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns(
     'lvfu.webapp.views',
-    (r'^$', "index"),
+    url(r'^$', "index", name='index'),
     url(r'^my_team$', 'my_team', name='my_team'),
     url(r'^league$', 'league', name='league')
 )

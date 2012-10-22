@@ -127,7 +127,12 @@ def my_team(request):
         team.players.bulk_create([Player(team=team,
                                          lv_player_id=player['id'],
                                          extra=json.dumps({'lv_player': player})) for player in players])
-        return redirect(my_team)
+
+        return render_app(request, 'team.html', "team", {
+            'league': league,
+            'member': Member.objects.get(pk=member.pk),
+            'created': True
+        })
 
 
 @require_http_methods(['GET', 'POST'])

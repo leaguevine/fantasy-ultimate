@@ -6,6 +6,16 @@
     .ui-leaderboard {
       width: 500px;
     }
+    .ui-leaderboard-pills {
+      float: left;
+    }
+    .ui-invite-friends {
+      float: right;
+      font-size: 16px;
+    }
+    .ui-fb-send-button {
+      margin-right: 10px;
+    }
     .ui-my-team td {
       background: #fffbcc !important;
     }
@@ -14,10 +24,15 @@
 
 {% block body_content %}
 <div class="ui-leaderboard">
-    <ul class="nav nav-pills" id="tabs">
-        <li><a href="#all" data-toggle="tab">Everyone</a></li>
-        <li><a href="#friends" data-toggle="tab">My Friends</a></li>
-    </ul>
+    <div class="clearfix">
+        <ul class="nav nav-pills ui-leaderboard-pills" id="tabs">
+            <li><a href="#all" data-toggle="tab">Everyone</a></li>
+            <li><a href="#friends" data-toggle="tab">My Friends</a></li>
+        </ul>
+        <div class="ui-invite-friends">
+            <a href="#" class="js-fb-send ui-fb-send-button"><img width="78" height="33" src="{{ STATIC_URL }}img/fb_send_button.png"/></a> invite more friends
+        </div>
+    </div>
 
     <div class="tab-content">
         <div class="tab-pane" id="all">
@@ -130,6 +145,19 @@ $(function() {
                 $(".js-friends-loading").hide();
                 $(".js-fb-not-connected").hide();
             }
+        });
+
+        $(".js-fb-send").click(function(e) {
+            e.preventDefault();
+
+            var a = document.createElement("a");
+            a.href = "{% url 'index' %}";
+
+            FB.ui({
+                method: 'send',
+                name: 'Play Fantasy Ultimate',
+                link: a.href
+            });
         });
     });
 });
