@@ -53,9 +53,6 @@ else: # Localhost
 
     # URL prefix for static files.
     STATIC_ROOT = os.path.join(PROJECT_ROOT, '../static-release/')
-    STATICFILES_DIRS = (
-        os.path.join(PROJECT_ROOT, '../static/'),
-    )
     STATIC_URL = '/static/'
     ADMIN_MEDIA_PREFIX = 'http://localhost:8000/static/admin/'
 
@@ -106,6 +103,10 @@ USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, '../static/'),
+)
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
