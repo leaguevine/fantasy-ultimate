@@ -4,8 +4,7 @@ import urllib2
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponseBadRequest,\
-    HttpResponseForbidden
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods, require_GET
 
@@ -35,7 +34,7 @@ def welcome(request):
     url = 'https://graph.facebook.com/%s/likes?%s' % (uid, urllib.urlencode(args))
     likes = json.load(urllib2.urlopen(url))['data']
     if settings.FACEBOOK_FAN_PAGE_ID in [l['id'] for l in likes]:
-        return HttpResponseRedirect("/")
+        return redirect(index)
     else:
         return render(request, "welcome.html")
 
@@ -54,22 +53,38 @@ def render_app(request, template, active_tab, context=None):
 @require_GET
 def index(request):
     if request.user.is_authenticated():
-        league = get_global_league()
-
-        members = league.members.all()
+        members = get_global_league().members.all()
         member = None
         try:
             member = members.get(user=request.user)
         except Member.DoesNotExist:
             pass
 
-        return render_app(request, 'league.html', "league", {
-            'league': league,
-            'member': member,
-            'teams': sorted(Team.objects.get_for_league(league), key=lambda t: -t.score)
-        })
+        if member and member.has_team:
+            return redirect(league)
+        else:
+            return redirect(my_team)
     else:
         return render(request, "login.html")
+
+
+@require_GET
+@login_required
+def league(request):
+    league = get_global_league()
+
+    members = league.members.all()
+    member = None
+    try:
+        member = members.get(user=request.user)
+    except Member.DoesNotExist:
+        pass
+
+    return render_app(request, 'league.html', "league", {
+        'league': league,
+        'member': member,
+        'teams': sorted(Team.objects.get_for_league(league), key=lambda t: -t.score)
+    })
 
 
 @require_http_methods(['GET', 'POST'])
@@ -133,7 +148,7 @@ def new_league(request):
 
 @require_http_methods(['GET', 'POST'])
 @login_required
-def league(request, pk):
+def _league(request, pk):
     league = get_object_or_404(League, pk=pk)
 
     members = league.members.all()

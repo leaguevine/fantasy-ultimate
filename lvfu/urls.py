@@ -14,13 +14,9 @@ urlpatterns = patterns('',
     (r'^account/', include('lvfu.account.urls')),
 )
 
-league_patterns = patterns(
-    'lvfu.webapp.views',
-    url(r'^$', 'league', name='league')
-)
-
 urlpatterns += patterns(
     'lvfu.webapp.views',
     (r'^$', "index"),
-    url(r'^my_team$', 'my_team', name='my_team')
+    url(r'^my_team$', 'my_team', name='my_team'),
+    url(r'^league$', 'league', name='league')
 )

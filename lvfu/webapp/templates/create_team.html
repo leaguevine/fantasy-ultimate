@@ -3,6 +3,7 @@
 {% load webapp_helpers %}
 
 {% block body_content %}
+<h4>You can view the leaderboard after creating your roster</h4>
 <p>
     <form class="js-new-team-form form-horizontal" action="{% url 'my_team' %}" method="POST">
         <legend>Create a team for {{ league.title }}</legend>

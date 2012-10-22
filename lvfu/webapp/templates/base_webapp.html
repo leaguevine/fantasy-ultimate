@@ -13,7 +13,7 @@
         <div class="container">
             <a class="brand" href="/">Fantasy Ultimate</a>
             <ul class="nav">
-                <li><a {% if active_tab == "league" %}class="active"{% endif %} href="/">Leaderboards</a>
+                <li><a {% if active_tab == "league" %}class="active"{% endif %} href="{% url 'league' %}">Leaderboards</a>
                 <li><a {% if active_tab == "team" %}class="active"{% endif %} href="{% url 'my_team' %}">My Team</a>
             </ul>
             <ul class="nav pull-right">
