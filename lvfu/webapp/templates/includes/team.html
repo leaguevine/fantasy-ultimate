@@ -1,0 +1,10 @@
+<p>
+    <h2><img width="25" height="25" src="{{ member.profile_pic }}"/> {% firstof member_name member.full_name %}</h2>
+    Current score: {{ member.team.score }}
+    <h3>Roster:</h3>
+    <ul>
+        {% for player in member.team.all_players %}
+            <li data-id="{{ player.lv_player_id }}">{{ player.extra.lv_player.first_name }} {{ player.extra.lv_player.last_name }}: {{ player.score }}</li>
+        {% endfor %}
+    </ul>
+</p>

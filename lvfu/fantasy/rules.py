@@ -9,4 +9,4 @@ STATS_FIELDS = RULES.keys()
 
 
 def compute_score(stats):
-    return reduce(lambda accum, (k, v): accum + RULES.get(k, 0) * v, stats.iteritems())
+    return reduce(lambda accum, (k, v): accum + RULES.get(k, 0) * v, stats.iteritems(), 0)

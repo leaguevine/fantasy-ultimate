@@ -6,6 +6,13 @@ import urlparse
 from django.conf import settings
 from django.core.cache import cache
 
+# Enforced by the Leaguevine API
+MAX_PAGE_SIZE = 200
+
+
+def make_list_qp(lst):
+    return "[%s]" % ",".join([str(i) for i in lst])
+
 
 def get_access_token(force_refresh=False, retries=2):
     if not force_refresh:
@@ -36,13 +43,18 @@ def get_access_token(force_refresh=False, retries=2):
 
 
 class GetListRequest(object):
-    def __init__(self, url, order_by=None, fields=None, page_size=None,
+    def __init__(self, url, order_by=None, fields=None, page_size=MAX_PAGE_SIZE,
                  offset=None, **extra_data):
-        self.url = urlparse.urljoin("https://api.leaguevine.com/v1", url)
+        if urlparse.urlparse(url).scheme:
+            self.url = url
+        else:
+            self.url = "https://api.leaguevine.com/v1"
+            if not url.startswith("/"):
+                self.url += "/"
+            self.url += url
         self.order_by = order_by
         self.fields = fields
-        # 200 is the max allowed by Leaguevine
-        self.limit = min(page_size, 200) if page_size else None
+        self.page_size = min(page_size, MAX_PAGE_SIZE) if page_size else None
         self.offset = offset
         self.extra_data = extra_data
         self.meta = None
@@ -61,15 +73,15 @@ class GetListRequest(object):
             data = {}
             data.update(self.extra_data)
             if self.order_by is not None:
-                data['order_by'] = self.order_by
+                data['order_by'] = make_list_qp(self.order_by)
             if self.fields is not None:
-                data['fields'] = self.fields
+                data['fields'] = make_list_qp(self.fields)
             if self.page_size is not None:
                 data['limit'] = self.page_size
             if self.offset is not None:
                 data['offset'] = self.offset
             data['access_token'] = get_access_token()
-            result = json.loads(urllib.urlopen(), data=urllib.urlencode(data))
+            result = json.loads(urllib.urlopen(self.url + '?' + urllib.urlencode(data)).read())
 
         self.meta = result['meta']
         return result['objects']

@@ -1,0 +1,130 @@
+{% extends "base_webapp.html" %}
+{% load url from future %}
+{% load webapp_helpers %}
+
+{% block body_content %}
+<p>
+    <form class="js-new-team-form form-horizontal" action="{% url 'my_team' %}" method="POST">
+        <legend>Create a team for {{ league.title }}</legend>
+
+        {% csrf_token %}
+
+        <div class="control-group">
+            <label class="control-label" for="title">Team name:</label>
+            <div class="controls">
+                <input id="title" name="title" type="text"/>
+            </div>
+        </div>
+
+        <div class="js-players-loading">
+            <div class="control-group">
+                <div class="controls">
+                    Loading players...
+                </div>
+            </div>
+        </div>
+        <div class="js-players hide">
+            {% num_range 7 as range %}
+            {% for i in range %}
+                <div class="control-group">
+                    <label class="control-label" for="player_{{ i }}">Player {{ i|add:"1" }}:</label>
+                    <div class="controls">
+                        <select id="player_{{ i }}" name="player_{{ i }}">
+                            <option value="choose">Choose a player</option>
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input type="submit" class="btn btn-primary" value="Join League" disabled="true"/>
+            </div>
+        </div>
+    </form>
+</p>
+{% endblock %}
+
+{% block page_script %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/libs/jquery.textchange.js"></script>
+<script>
+$(function() {
+    var updateSelections = function() {
+        var selects = $("select");
+        selects.find("option").show();
+        selects.filter('[value!="choose"]').each(function() {
+            selects.not(this).find('option[value="' + $(this).val() + '"]').hide();
+        });
+    };
+
+    var isFormValid = function() {
+        return $("#title").val() && ($('select[value!="choose"]').length === 7);
+    };
+
+    var checkForm = function() {
+        $('input[type="submit"]').attr("disabled", !isFormValid());
+    };
+
+    $("#title").on("hastext", checkForm).on("notext", checkForm);
+    $("select").on("change", checkForm).on("change", updateSelections);
+    $("form").submit(function(e) {
+        if (!isFormValid()) {
+            e.preventDefault();
+        }
+    });
+
+    LV.getList("/{% if league.event.type == 'tournament' %}tournament_{% endif %}teams/", {
+        {% if league.event.type == 'tournament' %}
+          fields: [ 'team' ],
+          extraParams: { tournament_ids: [ {{ league.event.lv_id  }} ] }
+        {% else %}
+          fields: [ 'id', 'name' ],
+          extraParams: { season_id: {{ league.event.lv_id  }} }
+        {% endif %}
+    }).getAll(function(teams) {
+        LV.getList("/team_players/", {
+            fields: [ 'player', 'team_id' ],
+            {% if league.event.type == 'tournament' %}
+              extraParams: { team_ids: _.pluck(_.pluck(teams, 'team'), 'id') }
+            {% else %}
+              extraParams: { team_ids: _.pluck(teams, 'id') }
+            {% endif %}
+        }).getAll(function(players) {
+            var teamMap = {};
+            _.each(teams, function(t) {
+                {% if league.event.type == 'tournament' %}
+                  teamMap[t.team_id] = t.team;
+                {% else %}
+                  teamMap[t.id] = t;
+                {% endif %}
+            });
+
+            players.sort(function(p1, p2) {
+                if (p1.player.last_name == p2.player.last_name) {
+                    if (p1.player.first_name < p2.player.first_name) {
+                        return -1;
+                    } else if (p1.player.first_name > p2.player.first_name) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    return (p1.player.last_name < p2.player.last_name) ? -1 : 1;
+                }
+            });
+
+            var html = _.reduce(players, function(html, player) {
+                return html + '<option value="' + player.player.id + '">' +
+                                player.player.first_name + ' ' + player.player.last_name +
+                                ' (' + teamMap[player.team_id].name + ')' +
+                              '</option>';
+            }, '');
+            $(html).appendTo($("select"));
+            $(".js-players-loading").hide();
+            $(".js-players").show();
+        });
+    });
+});
+</script>
+{% endblock %}

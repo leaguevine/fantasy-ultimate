@@ -70,7 +70,7 @@ class League(models.Model):
     objects = LeagueManager()
 
     def __unicode__(self):
-        return "%s/%s" % (str(self.event), self.title)
+        return self.title
 
     @models.permalink
     def get_absolute_url(self):
@@ -108,8 +108,8 @@ class Member(models.Model):
     # Only used before they sign up -- then their user and social auth objects
     # supercede these fields.
     fb_uid = models.CharField(max_length=512)
-    first_name = models.CharField(max_length=64)
-    last_name = models.CharField(max_length=64)
+    first_name = models.CharField(max_length=64, blank=True)
+    last_name = models.CharField(max_length=64, blank=True)
 
     user = models.ForeignKey(User, null=True, blank=True)
     league = models.ForeignKey(League, related_name='members')
@@ -123,20 +123,45 @@ class Member(models.Model):
     def get_last_name(self):
         return self.user.last_name if self.user else self.last_name
 
+    def get_fb_uid(self):
+        return self.user.fb_uid if self.user else self.fb_uid
+
     @property
     def full_name(self):
         return self.get_first_name() + " " + self.get_last_name()
 
     @property
+    def fbid(self):
+        return self.get_fb_uid()
+
+    @property
     def profile_pic(self):
-        return "https://graph.facebook.com/" + self.fb_uid + "/picture?format=square"
+        return self.user.profile_pic if self.user else "https://graph.facebook.com/" + self.fb_uid + "/picture?format=square"
+
+    @property
+    def has_team(self):
+        try:
+            self.team
+            return True
+        except Team.DoesNotExist:
+            return False
+
+    def __unicode__(self):
+        return '%s member=%s status=%s' % (self.league,
+                                           self.user or self.fb_uid,
+                                           self.status)
+
+
+class TeamManager(models.Manager):
+    def get_for_league(self, league):
+        return self.filter(owner__league=league)
 
 
 class Team(models.Model):
     """
     A team in a fantasy league
     """
-    owner = models.ForeignKey(Member)
+    owner = models.OneToOneField(Member)
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, blank=True, default='')
 
@@ -145,26 +170,41 @@ class Team(models.Model):
 
     extra = JSONField(blank=True)
 
+    objects = TeamManager()
+
     @property
     def league(self):
         return self.owner.league
+
+    @property
+    def score(self):
+        return self.players.aggregate(sum=models.Sum('score'))['sum']
+
+    @property
+    def all_players(self):
+        return self.players.all()
+
+    def __unicode__(self):
+        return "%s/%s" % (str(self.league), self.title)
 
 
 class PlayerManager(models.Manager):
     def get_for_league(self, league):
         return self.filter(team__owner__league=league)
 
+    def get_for_leagues(self, league_ids):
+        return self.filter(team__owner__league__id__in=league_ids)
+
 
 class Player(models.Model):
     """
     A player on a team in a fantasy league
     """
-    team = models.ForeignKey(Team)
-    # The Leaguevine ID of this team/player
-    lv_team_id = models.IntegerField()
+    team = models.ForeignKey(Team, related_name='players')
+    # The Leaguevine ID of this player
     lv_player_id = models.IntegerField()
 
-    score = models.IntegerField()
+    score = models.IntegerField(default=0)
     score_updated = models.DateTimeField(default=datetime.utcnow)
 
     creation_time = models.DateTimeField(default=datetime.utcnow,

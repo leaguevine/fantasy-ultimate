@@ -1,109 +1,107 @@
 {% extends "base_webapp.html" %}
 {% load url from future %}
 
-{% block body %}
-<h1>{{ app_data.league.title }}</h1>
-<p>
-    <h2>Members</h2>
-    <ul>
-       {% for m in members %}
-           <li><img width="25" height="25" src="{{ m.profile_pic }}"/> {% if m == member %}You{% else %}{{ m.full_name }}{% endif %}</li>
-       {% endfor %}
-    </ul>
-    <a href="#" class="js-invite-friends">Invite friends</a>
+{% block page_css %}
+<style>
+    .ui-leaderboard {
+      width: 500px;
+    }
+</style>
+{% endblock %}
 
-    <h2>Players</h2>
-    <ul class="js-players-list">
-        <li>Loading...</li>
+{% block body_content %}
+<div class="ui-leaderboard">
+    <ul class="nav nav-pills" id="tabs">
+        <li><a href="#all" data-toggle="tab">Everyone</a></li>
+        <li><a href="#friends" data-toggle="tab">My Friends</a></li>
     </ul>
 
-    <form id="invite-form" method="POST">
-        {% csrf_token %}
-        <input type="hidden" id="action" name="action" value="invite"/>
-        <input type="hidden" id="uids" name="uids" value=""/>
-        <input type="hidden" id="first-names" name="first_names" value=""/>
-        <input type="hidden" id="last-names" name="last_names" value=""/>
-    </form>
+    <div class="tab-content">
+        <div class="tab-pane" id="all">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Team</th>
+                        <th>Points</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                        <tr class="js-team-row{% if team.owner == member %} ui-my-team js-my-team"{% endif %}" data-id="{{ team.owner.fbid }}">
+                            <td>#{{ forloop.counter }}</td>
+                            <td>{{ team.title }}</td>
+                            <td class="paginate-right">{{ team.score }}</td>
+                            <td>
+                                <img width="25" height="25" src="{{ team.owner.profile_pic }}"/>
+                                {{ team.owner.full_name }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="friends">
+            <table class="table table-striped table-bordered hide">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Team</th>
+                        <th>Points</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                <tbody class="js-friends-body">
+                </tbody>
+            </table>
+            <div class="js-friends-loading">Loading...</div>
+            <div class="js-no-friends hide">None of your friends are playing :(</div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block includes %}
-    {% include "includes/facebook.html" %}
+{% include "includes/facebook.html" %}
 {% endblock %}
 
 {% block page_script %}
 {{ block.super }}
 <script>
-    (function() {
-        var existingMembers = [
-            {% for m in members %}
-                {{ m.fb_uid }},
-            {% endfor %}
-        ];
+$(function() {
+    $("#tabs a").click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+    $("#tabs a:first").tab('show');
 
-        $(".js-invite-friends").click(function(e) {
-            e.preventDefault();
-
-            FB.ui({
-                method: 'apprequests',
-                title: 'Select Friends to Invite',
-                message: "Hey! I've invited you into my fantasy ultimate league. Come play!",
-                exclude_ids: existingMembers,
-                data: {{ league.id }}
-            }, function(response) {
-                if (response && response.to && response.to.length > 0) {
-                    FB.api('/', {
-                        ids: response.to.join(','),
-                        fields: 'first_name,last_name'
-                    }, function(response) {
-                        var uids = [];
-                        var firstNames = [];
-                        var lastNames = [];
-                        _.each(response, function(friend) {
-                            uids.push(friend.id);
-                            firstNames.push(friend.first_name);
-                            lastNames.push(friend.last_name);
-                        });
-                        $("#uids").val(uids.join(","));
-                        $("#first-names").val(firstNames.join(","));
-                        $("#last-names").val(lastNames.join(","));
-                        $("#invite-form").submit();
+    window.onFBInit(function() {
+        FB.api('/me/friends', function(response) {
+            var ids = _.pluck(response.data, 'id');
+            var els = $();
+            $(".js-team-row").each(function() {
+                var el = $(this);
+                if (!el.hasClass("js-my-team")) {
+                    var found = _.detect(ids, function(id) {
+                        return id == el.data("data-id");
                     });
+                    if (!found) {
+                        return;
+                    }
                 }
+                els.add(el.clone());
             });
-        });
 
-        LV.getList("/{% if league.event.type == 'tournament' %}tournament_{% endif %}teams/", {
-            {% if league.event.type == 'tournament' %}
-              fields: [ 'team' ],
-              extraParams: { tournament_ids: [ {{ league.event.lv_id  }} ] }
-            {% else %}
-              fields: [ 'id', 'name' ],
-              extraParams: { season_id: {{ league.event.lv_id  }} }
-            {% endif %}
-        }).getAll(function(teams) {
-            LV.getList("/team_players/", {
-                fields: [ 'player', 'team_id' ],
-                {% if league.event.type == 'tournament' %}
-                  extraParams: { team_ids: _.pluck(_.pluck(teams, 'team'), 'id') }
-                {% else %}
-                  extraParams: { team_ids: _.pluck(teams, 'id') }
-                {% endif %}
-            }).getAll(function(players) {
-                var teamMap = {};
-                _.each(teams, function(t) {
-                    {% if league.event.type == 'tournament' %}
-                      teamMap[t.team_id] = t.team.name;
-                    {% else %}
-                      teamMap[t.id] = t.name;
-                    {% endif %}
-                });
-
-                var html = _.reduce(players, function(html, player) {
-                    return html + "<li>" + player.player.first_name + " " + player.player.last_name + " (" + teamMap[player.team_id] + ")</li>";
-                }, '');
-                $(".js-players-list").html(html);
-            });
+            $(".js-friends-loading").hide();
+            if (els.length > 0) {
+                els.appendTo($(".js-friends-body"));
+            } else {
+                $(".js-no-friends").show();
+            }
         });
-    })();
+    });
+});
 </script>
 {% endblock %}

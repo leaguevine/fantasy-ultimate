@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from models import Event, League
+from models import Event, League, Member, Team, Player
+from utils import update_player_scores
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -23,7 +24,67 @@ class LeagueAdmin(admin.ModelAdmin):
         'description'
     )
     date_hierarchy = 'creation_time'
+    actions = ['update_scores', 'reset_scores']
+
+    def update_scores(self, request, queryset):
+        for league in queryset:
+            update_player_scores(league)
+        self.message_user(request, "Scores updated")
+    update_scores.short_description = "Update player scores"
+
+    def reset_scores(self, request, queryset):
+        Player.objects.get_for_leagues([l.id for l in queryset]).update(score=0)
+        self.message_user(request, "Scores reset")
+    reset_scores.short_description = "Reset player scores to 0"
+
+
+class MemberAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'status',
+        'creation_time',
+        'fb_uid',
+        'first_name',
+        'last_name',
+        'user',
+        'league'
+    )
+    date_hierarchy = 'creation_time'
+
+
+class TeamAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'league',
+        'owner',
+        'title'
+    )
+    date_hierarchy = 'creation_time'
+
+
+class PlayerAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'team',
+        'name',
+        'lv_player_id',
+        'score',
+        'score_updated',
+        'owner',
+        'league'
+    )
+    date_hierarchy = 'creation_time'
+
+    def name(self, obj):
+        try:
+            player = obj.extra['lv_player']
+            return "%s %s" % (player['first_name'], player['last_name'])
+        except (KeyError, ValueError):
+            return ""
 
 
 admin.site.register(Event, EventAdmin)
 admin.site.register(League, LeagueAdmin)
+admin.site.register(Member, MemberAdmin)
+admin.site.register(Team, TeamAdmin)
+admin.site.register(Player, PlayerAdmin)

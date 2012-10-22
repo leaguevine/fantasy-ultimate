@@ -1,9 +1,44 @@
 {% extends "base.html" %}
+{% load url from future %}
 {% load webapp_helpers %}
+
+{% block default_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/app.css?v=2012102101" />
+{% endblock %}
+
+{% block body %}
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="/">Fantasy Ultimate</a>
+            <ul class="nav">
+                <li><a {% if active_tab == "league" %}class="active"{% endif %} href="/">Leaderboards</a>
+                <li><a {% if active_tab == "team" %}class="active"{% endif %} href="{% url 'my_team' %}">My Team</a>
+            </ul>
+            <ul class="nav pull-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <img width="25" height="25" src="{{ user.profile_pic }}/>
+                        Hi, {{ user.first_name }}
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a tabindex="-1" href="{% url 'account_signout' %}">Sign out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="app-main" class="container">
+    {% block body_content %}{% endblock %}
+</div>
+{% endblock %}
 
 {% block page_script %}
 {{ block.super }}
-
 <script>
 window.app_data = {
     {% for key, data in app_data.items %}

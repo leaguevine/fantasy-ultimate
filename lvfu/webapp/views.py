@@ -4,16 +4,21 @@ import urllib2
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponseBadRequest,\
+    HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
 
 from social_auth.db.django_models import UserSocialAuth
 
 from .. import lv
+from ..account.models import User
 from ..fb import get_app_access_token
-from ..fantasy.models import Event, League, Member
+from ..fantasy.models import Event, League, Member, Team, Player
+
+
+def get_global_league():
+    return League.objects.all()[0]
 
 
 @login_required
@@ -35,38 +40,80 @@ def welcome(request):
         return render(request, "welcome.html")
 
 
-def index(request):
-    if request.user.is_authenticated():
-        leagues = League.objects.get_all_for_user(request.user)
-        if leagues:
-            return render(request, "home.html", {'leagues': leagues})
-        else:
-            return render(request, "getstarted.html")
-    else:
-        return render(request, "login.html")
-
-
-def render_app(request, template, context=None):
+def render_app(request, template, active_tab, context=None):
     context = context or {}
 
     app_data = context.setdefault('app_data', {})
     app_data['lvat'] = "'%s'" % lv.get_access_token()
+    context['user'] = User.objects.get_user(request.user)
+    context['active_tab'] = active_tab
 
     return render(request, template, context)
 
 
-def render_league(request, league_pk, template, context=None):
-    league = get_object_or_404(League, pk=league_pk)
+@require_GET
+def index(request):
+    if request.user.is_authenticated():
+        league = get_global_league()
+
+        members = league.members.all()
+        member = None
+        try:
+            member = members.get(user=request.user)
+        except Member.DoesNotExist:
+            pass
+
+        return render_app(request, 'league.html', "league", {
+            'league': league,
+            'member': member,
+            'teams': sorted(Team.objects.get_for_league(league), lambda t: -t.score)
+        })
+    else:
+        return render(request, "login.html")
+
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def my_team(request):
+    league = get_global_league()
+
+    members = league.members.all()
+    member = None
     try:
-        member = league.members.get(user=request.user)
+        member = members.get(user=request.user)
     except Member.DoesNotExist:
-        return redirect_to_login(league.get_absolute_url())
+        pass
 
-    context = context or {}
-    context['league'] = league
-    context['member'] = member
+    if request.method == 'GET':
+        if member and member.has_team:
+            return render_app(request, 'team.html', "team", {
+                'league': league,
+                'member': member
+            })
+        else:
+            return render_app(request, 'create_team.html', "team", {
+                'league': league,
+                'members': members
+            })
+    else:
+        title = request.POST['title']
+        player_ids = [int(request.POST['player_%d' % i]) for i in range(7)]
 
-    return render_app(request, template, context)
+        # Fetch a copy of the player objects to store in the JSON fields
+        request = lv.GetListRequest("/players/", player_ids=lv.make_list_qp(player_ids))
+        players = request.get_all()
+
+        if member:
+            if member.has_team:
+                member.team.delete()
+        else:
+            member = league.members.create(user=request.user)
+
+        team = Team.objects.create(title=title, owner=member)
+        team.players.bulk_create([Player(team=team,
+                                         lv_player_id=player['id'],
+                                         extra=json.dumps({'lv_player': player})) for player in players])
+        return redirect(my_team)
 
 
 @require_http_methods(['GET', 'POST'])
@@ -91,20 +138,30 @@ def league(request, pk):
     league = get_object_or_404(League, pk=pk)
 
     members = league.members.all()
-    member = [m for m in members if m.user == request.user]
-    if not member:
-        return redirect_to_login(league.get_absolute_url())
-    member = member[0]
+    member = None
+    try:
+        member = members.get(user=request.user)
+    except Member.DoesNotExist:
+        pass
 
     if request.method == 'GET':
-        return render_app(request, 'league.html', {
-            'league': league,
-            'member': member,
-            'members': members
-        })
+        if member and member.has_team:
+            return render_app(request, 'league.html', {
+                'league': league,
+                'member': member,
+                'members': members
+            })
+        else:
+            return render_app(request, 'join_league.html', {
+                'league': league,
+                'members': members
+            })
     else:
         if not 'action' in request.POST or request.POST['action'] != 'invite':
             return HttpResponseBadRequest();
+
+        if not member:
+            return HttpResponseForbidden()
 
         uids = request.POST['uids'].split(",")
         first_names = request.POST['first_names'].split(",")

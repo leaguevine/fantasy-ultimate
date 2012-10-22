@@ -1,8 +1,7 @@
 {% extends "base_webapp.html" %}
 {% load url from future %}
 
-{% block body %}
-<h1>Fantasy Ultimate!</h1>
+{% block body_content %}
 <form action="{% url 'new_league' %}" method="POST">
     {% csrf_token %}
     <select name="event_id">

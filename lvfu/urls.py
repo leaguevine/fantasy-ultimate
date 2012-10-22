@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     url(r'^channel.html$', 'fb_channel', name='fb_channel_file'),
     url(r'', include('social_auth.urls')),
+
+    (r'^account/', include('lvfu.account.urls')),
 )
 
 league_patterns = patterns(
@@ -20,7 +22,5 @@ league_patterns = patterns(
 urlpatterns += patterns(
     'lvfu.webapp.views',
     (r'^$', "index"),
-    (r'^welcome$', "welcome"),
-    url(r'^newleague$', 'new_league', name='new_league'),
-    url(r'^league/(?P<pk>[0-9]+)', include(league_patterns))
+    url(r'^my_team$', 'my_team', name='my_team')
 )
