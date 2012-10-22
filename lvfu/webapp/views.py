@@ -66,7 +66,7 @@ def index(request):
         return render_app(request, 'league.html', "league", {
             'league': league,
             'member': member,
-            'teams': sorted(Team.objects.get_for_league(league), lambda t: -t.score)
+            'teams': sorted(Team.objects.get_for_league(league), key=lambda t: -t.score)
         })
     else:
         return render(request, "login.html")
