@@ -32,7 +32,7 @@
                         <tr class="js-team-row{% if team.owner == member %} ui-my-team js-my-team"{% endif %}" data-id="{{ team.owner.fbid }}">
                             <td>#{{ forloop.counter }}</td>
                             <td>{{ team.title }}</td>
-                            <td class="paginate-right">{{ team.score }}</td>
+                            <td>{{ team.score }}</td>
                             <td>
                                 <img width="25" height="25" src="{{ team.owner.profile_pic }}"/>
                                 {{ team.owner.full_name }}
