@@ -1,0 +1,20 @@
+{% extends "fragment_base.html" %}
+
+{% block content %}
+<table class="ui-roster-table table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Player</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in team.all_players %}
+            <tr>
+                <td><a target="_blank" href="{{ player.extra.lv_player.leaguevine_url }}">{{ player.extra.lv_player.first_name }} {{ player.extra.lv_player.last_name }}</a></td>
+                <td>{{ player.score }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

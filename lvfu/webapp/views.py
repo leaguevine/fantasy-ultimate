@@ -217,3 +217,15 @@ def _league(request, pk):
                        last_name=last_names[i]) for i, uid in enumerate(uids) if uid not in existing_uids]
         league.members.bulk_create(objs)
         return redirect(league)
+
+
+#
+# Fragments
+#
+@require_GET
+def fragment_roster(request):
+    team_id = request.GET['team_id']
+    team = Team.objects.get(pk=team_id)
+    return render(request, 'fragments/roster.html', {
+        'team': team
+    })
