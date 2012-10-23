@@ -29,7 +29,8 @@
       line-height: 0;
     }
     .ui-roster-loading-image {
-      margin: 10px auto;
+      text-align: center;
+      padding: 20px 0;
     }
     .ui-modal-owner-pic {
       margin-right: 10px;
@@ -106,8 +107,8 @@
         <h3><img class="ui-modal-owner-pic js-owner-pic" width="24" height="24"/><span class="js-title"></span></h3>
     </div>
     <div class="modal-body">
-        <div class="js-wait-content">
-            <img class="ui-roster-loading-image" width="64" height="64" src="{{ STATIC_URL }}img/loading.gif"/>
+        <div class="ui-roster-loading-image js-wait-content">
+            <img width="64" height="64" src="{{ STATIC_URL }}img/loading.gif"/>
         </div>
         <div class="js-roster-content"></div>
     </div>
@@ -135,14 +136,10 @@ $(function() {
 
     setRank($("#all"));
 
-    var baseOpts = {
-        trigger: 'hover',
-        placement: 'in right',
-    };
-    $(".js-view-roster").click(function(e) {
+    $(".ui-leaderboard").on("click", ".js-view-roster", function(e) {
         e.preventDefault();
 
-        var el = $(e.currentTarget);
+        var el = $(e.target);
         var rowEl = el.closest(".js-team-row");
 
         var modal = $("#roster-modal");
