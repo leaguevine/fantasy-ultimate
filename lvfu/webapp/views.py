@@ -107,8 +107,7 @@ def my_team(request):
             })
         else:
             return render_app(request, 'create_team.html', "team", {
-                'league': league,
-                'members': members
+                'league': league
             })
     else:
         title = request.POST['title']
@@ -117,8 +116,10 @@ def my_team(request):
         # Fetch a copy of the player objects to store in the JSON fields
         players = lv.GetListRequest("/players/", player_ids=lv.make_list_qp(player_ids)).get_all()
 
+        created = True
         if member:
             if member.has_team:
+                created = False
                 member.team.delete()
         else:
             member = league.members.create(user=request.user)
@@ -131,8 +132,30 @@ def my_team(request):
         return render_app(request, 'team.html', "team", {
             'league': league,
             'member': Member.objects.get(pk=member.pk),
-            'created': True
+            'created': created
         })
+
+
+@require_GET
+@login_required
+def modify_team(request):
+    league = get_global_league()
+
+    members = league.members.all()
+    member = None
+    try:
+        member = members.get(user=request.user)
+    except Member.DoesNotExist:
+        pass
+
+    if member and member.has_team:
+        return render_app(request, 'create_team.html', "team", {
+            'league': league,
+            'team': member.team,
+            'players': member.team.players.all()
+        })
+    else:
+        return redirect(my_team)
 
 
 @require_http_methods(['GET', 'POST'])

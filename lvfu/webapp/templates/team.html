@@ -1,4 +1,5 @@
 {% extends "base_webapp.html" %}
+{% load url from future %}
 
 {% block page_css %}
 <style>
@@ -27,7 +28,7 @@
 {% endif %}
 
 <div class="ui-roster">
-    <h2>Your roster:</h3>
+    <h2>Your roster:</h2>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -44,6 +45,9 @@
             {% endfor %}
         </tbody>
     </table>
+    <div class="pagination-right">
+        <a class="btn" href="{% url 'modify_team' %}">modify</a>
+    </div>
 </p>
 {% endblock %}
 

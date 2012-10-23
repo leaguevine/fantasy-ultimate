@@ -2,18 +2,33 @@
 {% load url from future %}
 {% load webapp_helpers %}
 
+{% block page_css %}
+<style>
+  input[type="text"] {
+    width: 338px;
+  }
+  select {
+    width: 350px;
+  }
+</style>
+{% endblock %}
+
 {% block body_content %}
-<h4>You can view the leaderboard after creating your roster</h4>
+{% if not team %}
+    <h4>You can view the leaderboard after creating your roster</h4>
+{% endif %}
 <p>
     <form class="js-new-team-form form-horizontal" action="{% url 'my_team' %}" method="POST">
-        <legend>Create a team for {{ league.title }}</legend>
+        {% if not team %}
+            <legend>Create a team for {{ league.title }}</legend>
+        {% endif %}
 
         {% csrf_token %}
 
         <div class="control-group">
             <label class="control-label" for="title">Team name:</label>
             <div class="controls">
-                <input id="title" name="title" type="text"/>
+                <input id="title" name="title" type="text" {% if team %}value="{{ team.title }}"{% endif %}/>
             </div>
         </div>
 
@@ -39,7 +54,7 @@
         </div>
         <div class="control-group">
             <div class="controls">
-                <input type="submit" class="btn btn-primary" value="Join League" disabled="true"/>
+                <input type="submit" class="btn btn-primary" value="Save roster" disabled="true"/>
             </div>
         </div>
     </form>
@@ -121,7 +136,18 @@ $(function() {
                                 ' (' + teamMap[player.team_id].name + ')' +
                               '</option>';
             }, '');
-            $(html).appendTo($("select"));
+            var selects = $("select");
+            $(html).appendTo(selects);
+
+            {% if team %}
+                var selects = $("select");
+                {% for player in team.all_players %}
+                    selects.eq({{ forloop.counter0 }}).val("{{ player.lv_player_id }}");
+                {% endfor %}
+                updateSelections();
+                checkForm();
+            {% endif %}
+
             $(".js-players-loading").hide();
             $(".js-players").show();
         });
