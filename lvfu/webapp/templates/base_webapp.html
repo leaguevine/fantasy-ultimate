@@ -13,8 +13,8 @@
         <div class="container">
             <a class="brand" href="/">Fantasy Ultimate</a>
             <ul class="nav">
-                <li><a {% if active_tab == "league" %}class="active"{% endif %} href="{% url 'league' %}">Leaderboards</a>
-                <li><a {% if active_tab == "team" %}class="active"{% endif %} href="{% url 'my_team' %}">My Team</a>
+                <li><a {% if active_tab == "league" %}class="active"{% endif %} href="{% url 'league' %}">{% if league.is_locked %}Leaderboards{% else %}All Teams{% endif %}</a></li>
+                <li><a {% if active_tab == "team" %}class="active"{% endif %} href="{% url 'my_team' %}">My Team</a></li>
             </ul>
             <ul class="nav pull-right">
                 <li class="dropdown">
@@ -48,5 +48,5 @@ window.app_data = {
 </script>
 
 <script src="{{ STATIC_URL}}js/libs/underscore.js"></script>
-<script src="{{ STATIC_URL}}js/lv.js?q=2012101907"></script>
+<script src="{{ STATIC_URL}}js/lv.js?q=2012102203"></script>
 {% endblock %}

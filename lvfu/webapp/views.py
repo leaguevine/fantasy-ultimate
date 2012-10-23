@@ -53,14 +53,16 @@ def render_app(request, template, active_tab, context=None):
 @require_GET
 def index(request):
     if request.user.is_authenticated():
-        members = get_global_league().members.all()
+        global_league = get_global_league()
+
+        members = global_league.members.all()
         member = None
         try:
             member = members.get(user=request.user)
         except Member.DoesNotExist:
             pass
 
-        if member and member.has_team:
+        if global_league.is_locked or (member and member.has_team):
             return redirect(league)
         else:
             return redirect(my_team)
@@ -105,11 +107,16 @@ def my_team(request):
                 'league': league,
                 'member': member
             })
+        elif league.is_locked:
+            return render_app(request, 'league_locked.html', "league")
         else:
             return render_app(request, 'create_team.html', "team", {
                 'league': league
             })
     else:
+        if league.is_locked:
+            return HttpResponseForbidden("League is locked")
+
         title = request.POST['title']
         player_ids = [int(request.POST['player_%d' % i]) for i in range(7)]
 

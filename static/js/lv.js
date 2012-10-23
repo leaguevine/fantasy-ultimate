@@ -103,6 +103,42 @@
         }
     });
 
+    var REGEXP_ISODATE = new RegExp("^([0-9]{4})-?([0-9]{2})-?([0-9]{2})" +
+            //4 5:Hour      6:Min       7:Sec
+             "(T([0-9]{2}):?([0-9]{2}):?([0-9]{2})" +
+            //8  9:frac
+             "(.([0-9]+))?" +
+            //10 1112+/-13 tzhr  14:Min
+             "(Z|(([-+])([0-9]{2}):([0-9]{2}))?)?)?$");
+
+    var isoDate = function(str) {
+        var d = str.match(REGEXP_ISODATE);
+
+        var offset = 0;
+        var date = new Date(d[1], 0, 1);
+
+        if (d[2]) { date.setMonth(d[2] - 1); }
+        if (d[3]) { date.setDate(d[3]); }
+        if (d[5]) { date.setHours(d[5]); }
+        if (d[6]) { date.setMinutes(d[6]); }
+        if (d[7]) { date.setSeconds(d[7]); }
+        if (d[10]) {
+            if (d[10] != 'Z') {
+                offset = (Number(d[13]) * 60) + Number(d[14]);
+                offset *= ((d[12] == '-') ? 1 : -1);
+            }
+            // Only offset the timezone by our own if there is a timezone
+            // specified. Otherwise we assume the time is "naive" and is intended
+            // to be displayed in the user's default timezone.
+            offset -= date.getTimezoneOffset();
+        }
+
+        time = (Number(date) + (offset * 60 * 1000));
+        var result = new Date();
+        result.setTime(Number(time));
+        return result;
+    };
+
     var LV = function() {
         this.accessToken = window.app_data.lvat;
     };
@@ -161,4 +197,7 @@
     });
 
     window.LV = new LV();
+    window.LV.Utils = {
+        isoDate: isoDate
+    };
 })();

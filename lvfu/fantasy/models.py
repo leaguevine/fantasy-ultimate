@@ -65,6 +65,8 @@ class League(models.Model):
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, blank=True, default='')
 
+    lock_time = models.DateTimeField(null=True, blank=True)
+
     extra = JSONField(blank=True)
 
     objects = LeagueManager()
@@ -79,6 +81,15 @@ class League(models.Model):
     @property
     def abs_url(self):
         return site_join_url(self.get_absolute_url())
+
+    @property
+    def iso_lock_time(self):
+        return self.lock_time.isoformat() if self.lock_time else ""
+
+    @property
+    def is_locked(self):
+        from django.utils import timezone
+        return self.lock_time and timezone.now() >= self.lock_time
 
 
 class Member(models.Model):
@@ -182,7 +193,7 @@ class Team(models.Model):
 
     @property
     def all_players(self):
-        return self.players.all()
+        return self.players.order_by('id').all()
 
     def __unicode__(self):
         return "%s/%s" % (str(self.league), self.title)

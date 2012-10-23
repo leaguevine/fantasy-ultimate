@@ -13,6 +13,9 @@
     .ui-roster {
       width: 500px;
     }
+    .ui-modify-roster {
+      float: right;
+    }
 </style>
 {% endblock %}
 
@@ -45,8 +48,19 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="pagination-right">
-        <a class="btn" href="{% url 'modify_team' %}">modify</a>
+    <div>
+        {% if not league.is_locked %}
+            <a class="ui-modify-roster btn" href="{% url 'modify_team' %}">modify</a>
+        {% endif %}
+        {% if league.lock_time %}
+            <span class="ui-league-status">
+                {% if league.is_locked %}
+                    The league is locked, so you can no longer modify your roster.
+                {% else %}
+                    You can change you roster up until <span class="js-lock-time"></span>.
+                {% endif %}
+            </span>
+        {% endif %}
     </div>
 </p>
 {% endblock %}
@@ -62,4 +76,17 @@
 </script>
 
 {% include "includes/facebook.html" %}
+{% endblock %}
+
+{% block page_script %}
+{{ block.super }}
+{% if not league.is_locked and league.lock_time %}
+<script src="{{ STATIC_URL }}js/libs/globalize.js"></script>
+<script>
+$(function() {
+    var lockTime = LV.Utils.isoDate("{{ league.iso_lock_time }}");
+    $(".js-lock-time").text(Globalize.format(lockTime, "f"));
+});
+</script>
+{% endif %}
 {% endblock %}

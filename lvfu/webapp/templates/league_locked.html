@@ -1,0 +1,24 @@
+{% extends 'base_webapp.html' %}
+
+{% block page_css %}
+<style>
+  .ui-text {
+    margin-top: 40px;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block body_content %}
+<h2 class="ui-text">
+    Sorry, you're too late for this round of Fantasy Ultimate. But there will
+    be more! Follow us on Facebook to stay in the know:
+</h2>
+<div class="pagination-centered">
+    <div class="fb-like" data-href="https://www.facebook.com/TheUltimatePage" data-send="false" data-width="450" data-show-faces="true"></div>
+</div>
+{% endblock %}
+
+{% block includes %}
+    {% include "includes/facebook.html" %}
+{% endblock %}
