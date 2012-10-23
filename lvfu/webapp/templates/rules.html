@@ -1,5 +1,51 @@
 {% extends "base_webapp.html" %}
 
+{% block page_css %}
+<style>
+  .table {
+    width: 300px;
+  }
+  .ui-positive {
+    color: green;
+  }
+  .ui-negative {
+    color: red;
+  }
+</style>
+{% endblock %}
+
 {% block body_content %}
-Rules go here
+<h2>Scoring rules</h2>
+<p>
+    The scoring rules are very simple. Each fantasy player gets points awarded
+    or deducted according to what they do during the games. Your fantasy team
+    score is the sum of all your fantasy players' scores. Here are the rules
+    for how points are awarded to fantasy players:
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Goal Thrown</td>
+            <td class="ui-positive">+1</td>
+        </tr>
+        <tr>
+            <td>Goal Caught</td>
+            <td class="ui-positive">+1</td>
+        </tr>
+        <tr>
+            <td>D</td>
+            <td class="ui-positive">+1</td>
+        </tr>
+        <tr>
+            <td>Turnover</td>
+            <td class="ui-negative">-1</td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}
