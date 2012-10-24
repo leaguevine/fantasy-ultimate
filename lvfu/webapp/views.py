@@ -46,6 +46,8 @@ def render_app(request, template, active_tab, context=None):
     app_data['lvat'] = "'%s'" % lv.get_access_token()
     context['user'] = User.objects.get_user(request.user)
     context['active_tab'] = active_tab
+    if not 'league' in context:
+        context['league'] = get_global_league()
 
     return render(request, template, context)
 
@@ -163,6 +165,12 @@ def modify_team(request):
         })
     else:
         return redirect(my_team)
+
+
+@require_GET
+@login_required
+def rules(request):
+    return render_app(request, 'rules.html', "rules")
 
 
 @require_http_methods(['GET', 'POST'])

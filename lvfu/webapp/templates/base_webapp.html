@@ -15,6 +15,7 @@
             <ul class="nav">
                 <li><a {% if active_tab == "league" %}class="active"{% endif %} href="{% url 'league' %}">{% if league.is_locked %}Leaderboards{% else %}All Teams{% endif %}</a></li>
                 <li><a {% if active_tab == "team" %}class="active"{% endif %} href="{% url 'my_team' %}">My Team</a></li>
+                <li><a {% if active_tab == "rules" %}class="active"{% endif %} href="{% url 'rules' %}">Rules</a></li>
             </ul>
             <ul class="nav pull-right">
                 <li class="dropdown">

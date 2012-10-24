@@ -305,6 +305,7 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 if USE_STATICFILES:
     STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 AWS_STORAGE_BUCKET_NAME = 'lvfantasyultimate'
+AWS_QUERYSTRING_AUTH = False
 AWS_HEADERS = {
     'Cache-Control': 'max-age=3600',
 }
