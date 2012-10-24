@@ -84,10 +84,18 @@ def league(request):
     except Member.DoesNotExist:
         pass
 
+    def _score(team):
+        return reduce(lambda a, p: a - p.score, team.players.all(), 0)
+
+    teams = (Team.objects.get_for_league(league)
+                         .prefetch_related('players', 'owner__user__social_auth'))
+
+    teams = sorted(teams, key=_score)
+
     return render_app(request, 'league.html', "league", {
         'league': league,
         'member': member,
-        'teams': sorted(Team.objects.get_for_league(league), key=lambda t: -t.score)
+        'teams': teams
     })
 
 

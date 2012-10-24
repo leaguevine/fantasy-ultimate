@@ -24,7 +24,12 @@ class User(BaseUser):
 
     @property
     def fb_uid(self):
-        return self.social_auth.get(provider='facebook').uid
+        # We only do Facebook authentication, so there should only ever be one
+        # social_auth object. Doing it this way allows prefetch_related calls
+        # (...user__social_auth) at a higher level to function as expected,
+        # and shouldn't really incur any additional overhead in other cases.
+        auth = [a for a in self.social_auth.all() if a.provider == 'facebook']
+        return auth[0].uid
 
     @property
     def profile_pic(self):
