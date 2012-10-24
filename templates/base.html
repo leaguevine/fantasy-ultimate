@@ -16,6 +16,13 @@
   <meta name="description" content="{% block meta_description %}{% endblock %}"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+  {% block og_%}
+    <meta property="og:title" content="Fantasy Ultimate"/>
+    <meta property="og:site_name" content="Fantasy Ultimate"/>
+    <meta property="og:image" content="https://s3.amazonaws.com/lvfantasyultimate/img/login_splash_page.jpg"/>
+    <meta property="og:description" content="It's Fantasy Ultimate from The Ultimate Page. You score points for the players you select on your team based on how they play at the Club Championships (Open division)."/>
+  {% endblock %}
+
   {% block default_css %}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.min.css?v=2012102201" />
   {% endblock %}
