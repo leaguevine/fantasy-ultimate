@@ -1,5 +1,38 @@
 @import "bootstrap-constants";
 
+* { position:relative; margin:0; padding:0; }
+.cl { clear: both; height: 0; font-size: 0; overflow: hidden; }
+img { border:none; }
+
 #app-main {
   padding-top: $bs-navbar-height + 40px;
+}
+
+#footer {
+	width:100%;
+	padding:20px;
+	background-color:#f6f6f6;
+	border-top:#e4e4e4 1px solid;
+    margin-top: 60px;
+}
+#footer .wrapper {
+	width:960px;
+	margin:auto;
+}
+#footer .wrapper .sponsor a {
+	padding:10px;
+	margin:10px 20px 10px 0px;
+	background-color:#fff;
+	border:#e4e4e4 1px solid;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	display:inline-block;
+}
+
+#footer .wrapper .type {
+	font-size:12px;
+}
+
+#footer .wrapper .type a {
+	color:#486673;
 }

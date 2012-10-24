@@ -8,6 +8,17 @@
 {% endblock %}
 
 {% block body %}
+<!--GOES RIGHT AFTER THE BEGINNING BODY TAG-->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=517564678270872";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!--GOES RIGHT AFTER THE BEGINNING BODY TAG-->
+
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -35,6 +46,22 @@
 
 <div id="app-main" class="container">
     {% block body_content %}{% endblock %}
+</div>
+<div id="footer">
+	<div class="wrapper">
+		<div class="fb-like" data-href="http://fantasy.ultimatepagehq.com/" data-send="false" data-width="800" data-show-faces="true" data-colorscheme="dark" data-font="lucida grande"></div>
+		<div class="sponsor">
+            <a href="https://www.leaguevine.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/leaguevine.jpg" /></a>
+			<a href="http://hammerfakesandiobreaks.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/hammerfakes.jpg" /></a>
+			<a href="http://fiveultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/5.jpg" /></a>
+			<a href="https://www.ngnultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/x.jpg" /></a>
+			<a href="http://www.patagonia.com" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/patagonia.jpg" /></a>
+			<a href="http://www.ulticards.net/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/ulticards.jpg" /></a>
+		</div>
+		<div class="type">Fantasy Ultimate is a project from <a href="https://www.facebook.com/TheUltimatePage" target="_blank">The Ultimate Page</a><br />
+			Brought to you by <a href="https://github.com/bendemboski" target="_blank">Ben Demboski</a>
+		</div>		
+	</div>
 </div>
 {% endblock %}
 
