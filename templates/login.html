@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 
+{% block page_css %}
+    <style type="text/css">
+        * { position:relative; margin:0; padding:0; }
+        .cl { clear: both; height: 0; font-size: 0; overflow: hidden; }
+        img { border:none; }
+        body {
+            background:#000;
+        }
+        #main a {
+            display:block;
+            margin:auto;
+            width:1000px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<h1>Login in!</h1>
-<p>Click <a href="{% url socialauth_begin "facebook" %}">here</a>
+    <div id="main">
+        <a href="{% url socialauth_begin "facebook" %}"><img src="{{ STATIC_URL }}img/login_splash_page.jpg" /></a>
+    </div>
 {% endblock %}
