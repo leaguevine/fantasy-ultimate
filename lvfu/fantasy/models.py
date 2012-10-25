@@ -167,6 +167,9 @@ class TeamManager(models.Manager):
     def get_for_league(self, league):
         return self.filter(owner__league=league)
 
+    def get_for_leagues(self, leagues):
+        return self.filter(owner__league__in=leagues)
+
 
 class Team(models.Model):
     """
@@ -175,6 +178,8 @@ class Team(models.Model):
     owner = models.OneToOneField(Member)
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, blank=True, default='')
+
+    rank = models.IntegerField()
 
     creation_time = models.DateTimeField(default=datetime.utcnow,
                                          editable=False)

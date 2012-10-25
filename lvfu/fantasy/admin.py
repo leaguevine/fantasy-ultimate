@@ -4,7 +4,7 @@ from django.contrib import admin
 from ..utils.forms import JSONFormField
 
 from models import Event, League, Member, Team, Player
-from utils import update_player_scores
+from utils import update_player_scores, update_team_ranks
 
 
 def admin_form(_model):
@@ -43,11 +43,13 @@ class LeagueAdmin(admin.ModelAdmin):
     def update_scores(self, request, queryset):
         for league in queryset:
             update_player_scores(league)
+            update_team_ranks(league)
         self.message_user(request, "Scores updated")
-    update_scores.short_description = "Update player scores"
+    update_scores.short_description = "Update player scores and team rankings"
 
     def reset_scores(self, request, queryset):
         Player.objects.get_for_leagues([l.id for l in queryset]).update(score=0)
+        Team.objects.get_for_leagues([l.id for l in queryset]).update(rank=0)
         self.message_user(request, "Scores reset")
     reset_scores.short_description = "Reset player scores to 0"
 
@@ -73,7 +75,8 @@ class TeamAdmin(admin.ModelAdmin):
         'id',
         'league',
         'owner',
-        'title'
+        'title',
+        'rank'
     )
     date_hierarchy = 'creation_time'
 

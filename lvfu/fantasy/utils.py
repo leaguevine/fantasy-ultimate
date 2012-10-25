@@ -1,7 +1,9 @@
 from datetime import datetime
 
+from django.db.models import Sum
+
 from ..lv.stats import get_player_stats
-from models import Player
+from models import Player, Team
 from rules import STATS_FIELDS, compute_score
 
 
@@ -20,3 +22,10 @@ def update_player_scores(league):
         (all_players.filter(lv_player_id=player_id)
                     .update(score=compute_score(stats),
                             score_updated = datetime.utcnow()))
+
+
+def update_team_ranks(league):
+    teams = Team.objects.annotate(c_score=Sum('players__score')).order_by('-c_score').all()
+    for i, team in enumerate(teams):
+        team.rank = i + 1
+        team.save()

@@ -4,9 +4,12 @@ import urllib2
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods, require_GET, \
+    require_POST
 
 from social_auth.db.django_models import UserSocialAuth
 
@@ -96,6 +99,42 @@ def league(request):
         'league': league,
         'member': member,
         'teams': teams
+    })
+
+
+@require_GET
+@login_required
+def league2(request):
+    league = get_global_league()
+
+    members = league.members.all()
+    member = None
+    try:
+        member = members.get(user=request.user)
+    except Member.DoesNotExist:
+        pass
+
+    if member:
+        try:
+            my_team = Team.objects.get(owner=member)
+        except Team.DoesNotExist:
+            my_team = None
+    else:
+        my_team = None
+
+    teams = (Team.objects.get_for_league(league)
+                         .filter(owner__league=league)
+                         .order_by('rank', 'id')
+                         .prefetch_related('players', 'owner__user__social_auth')
+                         .all())
+
+    count = 20
+
+    return render_app(request, 'league2.html', "league", {
+        'league': league,
+        'member': member,
+        'teams': teams[:count],
+        'my_team': my_team
     })
 
 
@@ -251,4 +290,37 @@ def fragment_roster(request):
     team = Team.objects.get(pk=team_id)
     return render(request, 'fragments/roster.html', {
         'team': team
+    })
+
+
+@require_POST
+@login_required
+@csrf_exempt
+def fragment_team_rows(request):
+    league = get_global_league()
+
+    members = league.members.all()
+    member = None
+    try:
+        member = members.get(user=request.user)
+    except Member.DoesNotExist:
+        pass
+
+    friend_ids = [uid for uid in request.POST['fb_uids'].split(",")]
+    if member and member.fb_uid not in friend_ids:
+        friend_ids.append(member.fb_uid)
+
+    teams = (Team.objects.get_for_league(league)
+                         .filter(owner__league=league)
+                         .filter(Q(owner__fb_uid__in=friend_ids) |
+                                 Q(owner__user__social_auth__provider='facebook',
+                                   owner__user__social_auth__uid__in=friend_ids))
+                         .order_by('rank', 'id')
+                         .prefetch_related('players', 'owner__user__social_auth')
+                         .all())
+
+    return render(request, 'fragments/team_rows.html', {
+        'league': league,
+        'teams': teams,
+        'member': member
     })

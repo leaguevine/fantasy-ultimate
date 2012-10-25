@@ -1,0 +1,22 @@
+{% for team in teams %}
+    <tr class="js-team-row{% if team.owner == member %} ui-my-team js-my-team"{% endif %}" data-id="{{ team.id }}" data-owner-id="{{ team.owner.fbid }}">
+        {% if league.is_locked %}
+            {% if rank_order %}
+                <td class="js-rank">{% if team.rank != 0 %}#{{ forloop.counter }}{% endif %}</td>
+            {% else %}
+                <td class="js-rank">{% if team.rank != 0 %}#{{ team.rank }}{% endif %}</td>
+            {% endif %}
+        {% endif %}
+        <td class="js-title">{{ team.title }}</td>
+        {% if league.is_locked %}
+            <td>{{ team.score }}</td>
+        {% endif %}
+        <td>
+            <img class="js-owner-pic" width="25" height="25" src="{{ team.owner.profile_pic }}"/>
+            {{ team.owner.full_name }}
+            {% if league.is_locked %}
+                <a href="#" class="ui-view-roster-icon js-view-roster"><i class="icon-zoom-in"></i></a>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}

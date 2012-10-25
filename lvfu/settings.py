@@ -145,7 +145,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'lvfu.context_processors.facebook',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = []
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
+MIDDLEWARE_CLASSES += [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -154,7 +159,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ROOT_URLCONF = 'lvfu.urls'
 
@@ -165,7 +170,12 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, '../templates/'),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = []
+
+if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
+
+INSTALLED_APPS += [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -183,7 +193,7 @@ INSTALLED_APPS = (
     'lvfu.lv',
     'lvfu.utils',
     'lvfu.webapp'
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.facebook.FacebookBackend',
