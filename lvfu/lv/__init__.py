@@ -68,7 +68,7 @@ class GetListRequest(object):
             return None
 
         if self.meta:
-            result = json.loads(urllib.urlopen(self.meta['next']))
+            result = json.loads(urllib.urlopen(self.meta['next']).read())
         else:
             data = {}
             data.update(self.extra_data)
