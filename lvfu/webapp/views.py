@@ -280,9 +280,11 @@ def fragment_team_rows(request):
     except Member.DoesNotExist:
         pass
 
-    friend_ids = [uid for uid in request.POST['fb_uids'].split(",")]
-    if member and member.fb_uid not in friend_ids:
-        friend_ids.append(member.fb_uid)
+    friend_ids = [uid for uid in request.POST['fb_uids'].split(",") if uid]
+    if member:
+        uid = member.get_fb_uid()
+        if uid not in friend_ids:
+            friend_ids.append(uid)
 
     teams = (Team.objects.get_for_league(league)
                          .filter(owner__league=league)

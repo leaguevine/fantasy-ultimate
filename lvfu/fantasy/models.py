@@ -118,7 +118,7 @@ class Member(models.Model):
 
     # Only used before they sign up -- then their user and social auth objects
     # supercede these fields.
-    fb_uid = models.CharField(max_length=512)
+    fb_uid = models.CharField(max_length=512, blank=True)
     first_name = models.CharField(max_length=64, blank=True)
     last_name = models.CharField(max_length=64, blank=True)
 
@@ -179,8 +179,8 @@ class Team(models.Model):
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, blank=True, default='')
 
-    score = models.IntegerField()
-    rank = models.IntegerField()
+    score = models.IntegerField(default=0)
+    rank = models.IntegerField(default=0)
 
     creation_time = models.DateTimeField(default=datetime.utcnow,
                                          editable=False)
