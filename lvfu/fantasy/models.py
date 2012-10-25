@@ -179,6 +179,7 @@ class Team(models.Model):
     title = models.CharField(max_length=256)
     description = models.CharField(max_length=2048, blank=True, default='')
 
+    score = models.IntegerField()
     rank = models.IntegerField()
 
     creation_time = models.DateTimeField(default=datetime.utcnow,
@@ -191,10 +192,6 @@ class Team(models.Model):
     @property
     def league(self):
         return self.owner.league
-
-    @property
-    def score(self):
-        return self.players.aggregate(sum=models.Sum('score'))['sum']
 
     @property
     def all_players(self):

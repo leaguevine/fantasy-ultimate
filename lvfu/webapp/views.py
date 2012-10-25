@@ -98,7 +98,7 @@ def league(request):
     teams = (Team.objects.get_for_league(league)
                          .filter(owner__league=league)
                          .order_by('rank', 'id')
-                         .prefetch_related('players', 'owner__user__social_auth')
+                         .prefetch_related('owner__user__social_auth')
                          .all())
 
     count = 20
@@ -107,6 +107,7 @@ def league(request):
         'league': league,
         'member': member,
         'teams': teams[:count],
+        'total_teams': teams.count(),
         'my_team': my_team
     })
 
@@ -289,7 +290,7 @@ def fragment_team_rows(request):
                                  Q(owner__user__social_auth__provider='facebook',
                                    owner__user__social_auth__uid__in=friend_ids))
                          .order_by('rank', 'id')
-                         .prefetch_related('players', 'owner__user__social_auth')
+                         .prefetch_related('owner__user__social_auth')
                          .all())
 
     return render(request, 'fragments/team_rows.html', {

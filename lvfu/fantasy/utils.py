@@ -27,5 +27,6 @@ def update_player_scores(league):
 def update_team_ranks(league):
     teams = Team.objects.annotate(c_score=Sum('players__score')).order_by('-c_score').all()
     for i, team in enumerate(teams):
+        team.score = team.c_score
         team.rank = i + 1
         team.save()

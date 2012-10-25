@@ -76,7 +76,8 @@ class TeamAdmin(admin.ModelAdmin):
         'league',
         'owner',
         'title',
-        'rank'
+        'rank',
+        'score'
     )
     date_hierarchy = 'creation_time'
 

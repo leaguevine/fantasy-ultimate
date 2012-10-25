@@ -54,7 +54,7 @@
         <div class="tab-pane" id="all">
             {% if league.is_locked and my_team and my_team.rank != 0 %}
                 <h1 class="js-rank-line">
-                    You are currently ranked #{{ my_team.rank }}
+                    You are currently ranked #{{ my_team.rank }} of {{ total_teams }}
                     <a href="{% url 'my_team' %}" class="ui-view-team-link">(view team)</a>
                 </h1>
             {% endif %}
