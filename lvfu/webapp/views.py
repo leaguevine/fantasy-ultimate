@@ -87,33 +87,6 @@ def league(request):
     except Member.DoesNotExist:
         pass
 
-    def _score(team):
-        return reduce(lambda a, p: a - p.score, team.players.all(), 0)
-
-    teams = (Team.objects.get_for_league(league)
-                         .prefetch_related('players', 'owner__user__social_auth'))
-
-    teams = sorted(teams, key=_score)
-
-    return render_app(request, 'league.html', "league", {
-        'league': league,
-        'member': member,
-        'teams': teams
-    })
-
-
-@require_GET
-@login_required
-def league2(request):
-    league = get_global_league()
-
-    members = league.members.all()
-    member = None
-    try:
-        member = members.get(user=request.user)
-    except Member.DoesNotExist:
-        pass
-
     if member:
         try:
             my_team = Team.objects.get(owner=member)
@@ -130,7 +103,7 @@ def league2(request):
 
     count = 20
 
-    return render_app(request, 'league2.html', "league", {
+    return render_app(request, 'league.html', "league", {
         'league': league,
         'member': member,
         'teams': teams[:count],

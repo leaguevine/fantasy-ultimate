@@ -13,6 +13,9 @@
       float: right;
       font-size: 16px;
     }
+    .ui-view-team-link {
+      font-size: 14px;
+    }
     .ui-fb-send-button {
       margin-right: 10px;
     }
@@ -49,8 +52,11 @@
 
     <div class="tab-content">
         <div class="tab-pane" id="all">
-            {% if league.is_locked %}
-                <h1 class="js-rank-line hide">You are currently ranked #<span class="js-rank"></span></h1>
+            {% if league.is_locked and my_team and my_team.rank != 0 %}
+                <h1 class="js-rank-line hide">
+                    You are currently ranked #{{ my_team.rank }}
+                    <a href="{% url 'my_team' %}" class="ui-view-team-link">(view team)</a>
+                </h1>
             {% endif %}
             <table class="table table-striped table-bordered">
                 <thead>
@@ -66,24 +72,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for team in teams %}
-                        <tr class="js-team-row{% if team.owner == member %} ui-my-team js-my-team"{% endif %}" data-id="{{ team.id }}" data-owner-id="{{ team.owner.fbid }}">
-                            {% if league.is_locked %}
-                                <td>#{{ forloop.counter }}</td>
-                            {% endif %}
-                            <td class="js-title">{{ team.title }}</td>
-                            {% if league.is_locked %}
-                                <td>{{ team.score }}</td>
-                            {% endif %}
-                            <td>
-                                <img class="js-owner-pic" width="25" height="25" src="{{ team.owner.profile_pic }}"/>
-                                {{ team.owner.full_name }}
-                                {% if league.is_locked %}
-                                    <a href="#" class="ui-view-roster-icon js-view-roster"><i class="icon-zoom-in"></i></a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                    {% include "includes/team_rows.html" with team=team league=league %}
                 </tbody>
             </table>
         </div>
@@ -135,6 +124,8 @@
 {{ block.super }}
 <script>
 $(function() {
+    var leagueLocked = {% if league.is_locked %}true{% else %}false{% endif %};
+
     var setRank = function(paneEl) {
         var myTeam = paneEl.find(".js-my-team");
         if (myTeam.length > 0) {
@@ -144,8 +135,6 @@ $(function() {
             rankLine.show();
         };
     };
-
-    setRank($("#all"));
 
     $(".ui-leaderboard").on("click", ".js-view-roster", function(e) {
         e.preventDefault();
@@ -185,30 +174,23 @@ $(function() {
         FB.getLoginStatus(function(response) {
             if (response.status === 'connected') {
                 FB.api('/me/friends', function(response) {
-                    var ids = _.pluck(response.data, 'id');
-                    var els = $();
-                    $(".js-team-row").each(function() {
-                        var el = $(this);
-                        var elid = el.attr("data-owner-id");
-                        if (!el.hasClass("js-my-team")) {
-                            var found = _.detect(ids, function(id) {
-                                return id == elid;
+                    var url = "{% url 'fragment_roster' %} #content";
+                    $(".js-friends-body").load("{% url 'fragment_team_rows' %}",
+                            { fb_uids: _.pluck(response.data, 'id').join(",") },
+                            function() {
+                                var container = $(".js-friends-body #content");
+                                container.children().first().unwrap();
+                                container.remove();
+                                $(".js-friends-loading").hide();
+                                if ($(".js-friends-body").children().length > 0) {
+                                    $(".js-friends").show();
+                                    if ($(".js-friends .js-my-team .js-rank").text()) {
+                                        setRank($("#friends"));
+                                    }
+                                } else {
+                                    $(".js-no-friends").show();
+                                }
                             });
-                            if (!found) {
-                                return;
-                            }
-                        }
-                        els = els.add(el.clone());
-                    });
-
-                    $(".js-friends-loading").hide();
-                    if (els.length > 0) {
-                        els.appendTo($(".js-friends-body"));
-                        $(".js-friends").show();
-                        setRank($("#friends"));
-                    } else {
-                        $(".js-no-friends").show();
-                    }
                 });
             } else {
                 $(".js-friends-loading").hide();

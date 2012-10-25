@@ -26,7 +26,6 @@ urlpatterns += patterns(
     url(r'^my_team$', 'my_team', name='my_team'),
     url(r'^modify_team$', 'modify_team', name='modify_team'),
     url(r'^league$', 'league', name='league'),
-    url(r'^league2$', 'league2', name='league2'),
     url(r'^rules$', 'rules', name='rules'),
 
     (r'^fragment/', include(fragment_patterns))
