@@ -1,8 +1,14 @@
 from django import template
+from django.conf import settings
 from django.template import Node, TemplateSyntaxError
 from django.template.defaultfilters import stringfilter
 
 register = template.Library()
+
+
+@register.inclusion_tag('includes/google_analytics.html')
+def google_analytics():
+    return {'analytics_enabled': settings.ANALYTICS_ENABLED}
 
 
 @register.filter

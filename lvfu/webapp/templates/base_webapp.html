@@ -37,20 +37,20 @@
     {% block body_content %}{% endblock %}
 </div>
 <div id="footer">
-	<div class="wrapper">
-		<div class="fb-like" data-href="http://fantasy.ultimatepagehq.com/" data-send="false" data-width="800" data-show-faces="true" data-colorscheme="dark" data-font="lucida grande"></div>
-		<div class="sponsor">
+    <div class="wrapper">
+        <div class="fb-like" data-href="http://fantasy.ultimatepagehq.com/" data-send="false" data-width="800" data-show-faces="true" data-colorscheme="dark" data-font="lucida grande"></div>
+        <div class="sponsor">
             <a href="https://www.leaguevine.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/leaguevine.jpg" /></a>
-			<a href="http://hammerfakesandiobreaks.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/hammerfakes.jpg" /></a>
-			<a href="http://fiveultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/5.jpg" /></a>
-			<a href="https://www.ngnultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/x.jpg" /></a>
-			<a href="http://www.patagonia.com" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/patagonia.jpg" /></a>
-			<a href="http://www.ulticards.net/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/ulticards.jpg" /></a>
-		</div>
-		<div class="type">Fantasy Ultimate is a project from <a href="https://www.facebook.com/TheUltimatePage" target="_blank">The Ultimate Page</a><br />
-			Brought to you by <a href="https://github.com/bendemboski" target="_blank">Ben Demboski</a>
-		</div>		
-	</div>
+            <a href="http://hammerfakesandiobreaks.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/hammerfakes.jpg" /></a>
+            <a href="http://fiveultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/5.jpg" /></a>
+            <a href="https://www.ngnultimate.com/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/x.jpg" /></a>
+            <a href="http://www.patagonia.com" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/patagonia.jpg" /></a>
+            <a href="http://www.ulticards.net/" target="_blank"><img src="{{ STATIC_URL }}img/sponsors/ulticards.jpg" /></a>
+        </div>
+        <div class="type">Fantasy Ultimate is a project from <a href="https://www.facebook.com/TheUltimatePage" target="_blank">The Ultimate Page</a><br />
+            Brought to you by <a href="https://github.com/bendemboski" target="_blank">Ben Demboski</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -68,6 +68,6 @@ window.app_data = {
 <script src="{{ STATIC_URL}}js/lv.js?q=2012102203"></script>
 {% endblock %}
 
-{% block includes %}
+{% block page_includes %}
 {% include "includes/facebook.html" %}
 {% endblock %}

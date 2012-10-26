@@ -70,6 +70,7 @@ else: # Localhost
         USE_STATICFILES = True
 
 TEMPLATE_DEBUG = DEBUG
+ANALYTICS_ENABLED = not DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
