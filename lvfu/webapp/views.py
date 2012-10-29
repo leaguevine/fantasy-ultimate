@@ -101,6 +101,11 @@ def league(request):
                          .prefetch_related('owner__user__social_auth')
                          .all())
 
+    top_players = (Player.objects.get_for_league(league)
+                                 .distinct('lv_player_id', 'score')
+                                 .order_by('-score')
+                                 .all())
+
     count = 20
 
     return render_app(request, 'league.html', "league", {
@@ -108,7 +113,8 @@ def league(request):
         'member': member,
         'teams': teams[:count],
         'total_teams': teams.count(),
-        'my_team': my_team
+        'my_team': my_team,
+        'top_players': top_players[:count]
     })
 
 
