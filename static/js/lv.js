@@ -1,24 +1,20 @@
-(function() {
+((() => {
     //usage: log('inside coolFunc', this, arguments);
     //paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-    window.log = function() {
+    window.log = function(...args) {
         log.history = log.history || [];   // store logs to an array for reference
-        log.history.push(arguments);
+        log.history.push(args);
         //arguments.callee = arguments.callee.caller;
-        if(this.console && this.console.log) { console.log( Array.prototype.slice.call(arguments) ); }
+        if(this.console && this.console.log) { console.log( Array.prototype.slice.call(args) ); }
     };
     //make it safe to use console.log always
-    (function(b) {function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a;a=d.pop()){b[a]=b[a]||c;}})(window.console=window.console||{});
+    ((b => {function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,markTimeline,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a;a=d.pop()){b[a]=b[a]||c;}}))(window.console=window.console||{});
 
-    var isAbsolute = function(url) {
-        return (/^http:.*/).test(url) || (/^https:.*/).test(url);
-    };
+    var isAbsolute = url => (/^http:.*/).test(url) || (/^https:.*/).test(url);
 
-    var hasAccessToken = function(url) {
-        return (/access_token=/).test(url);
-    };
+    var hasAccessToken = url => (/access_token=/).test(url);
 
-    var appendQueryParam = function(url, key, value) {
+    var appendQueryParam = (url, key, value) => {
         if (url.indexOf('?') == -1) {
             url = url + '?';
         } else {
@@ -27,7 +23,7 @@
         return url + key + "=" + value;
     };
 
-    var paramValue = function(v) {
+    var paramValue = v => {
         if (_.isArray(v)) {
             return "[" + v.join(",") + "]";
         }
@@ -48,18 +44,18 @@
     };
 
     _.extend(GetListRequest.prototype, {
-        hasMorePages: function() {
+        hasMorePages() {
             return !this.meta || this.meta.next;
         },
 
-        getNextPage: function(cb) {
+        getNextPage(cb) {
             if (!this.hasMorePages()) {
                 cb();
                 return;
             }
 
             var _this = this;
-            var success = function(result) {
+            var success = result => {
                 _this.meta = result.meta;
                 cb(result.objects);
             };
@@ -68,7 +64,7 @@
                 this.lv.get(this.meta.next, success);
             } else {
                 var params = {};
-                _.each(this.extraParams, function(v, k) {
+                _.each(this.extraParams, (v, k) => {
                     params[k] = paramValue(v);
                 });
                 if (this.orderBy) {
@@ -87,10 +83,10 @@
             }
         },
 
-        getAll: function(cb) {
+        getAll(cb) {
             var objects = [];
             var _this = this;
-            var success = function(objs) {
+            var success = objs => {
                 Array.prototype.push.apply(objects, objs);
                 if (_this.hasMorePages()) {
                     _this.getNextPage(success);
@@ -111,7 +107,7 @@
             //10 1112+/-13 tzhr  14:Min
              "(Z|(([-+])([0-9]{2}):([0-9]{2}))?)?)?$");
 
-    var isoDate = function(str) {
+    var isoDate = str => {
         var d = str.match(REGEXP_ISODATE);
 
         var offset = 0;
@@ -144,7 +140,7 @@
     };
 
     _.extend(LV.prototype, {
-        makeApiUrl: function(url) {
+        makeApiUrl(url) {
             if (!isAbsolute(url)) {
                 url = "https://api.leaguevine.com/v1" + url;
             }
@@ -154,19 +150,19 @@
             return url;
         },
 
-        get: function(url, p1, p2, p3) {
+        get(url, p1, p2, p3) {
             if (_.isFunction(p1)) {
-                this.api({ url: url, cb: p1, error: p2 });
+                this.api({ url, cb: p1, error: p2 });
             } else {
-                this.api({ url: url, params: p1, cb: p2, error: p3 });
+                this.api({ url, params: p1, cb: p2, error: p3 });
             }
         },
 
-        api: function(args) {
+        api(args) {
             args = args || {};
             var method = args.method || "GET";
-            var cb = args.cb || function() {};
-            var error = args.error || function() {};
+            var cb = args.cb || (() => {});
+            var error = args.error || (() => {});
             var url = this.makeApiUrl(args.url);
             var data = null;
             var dataType = null;
@@ -180,24 +176,24 @@
             }
 
             $.ajax({
-                url: url,
-                data: data,
+                url,
+                data,
                 type: method,
                 contentType: "application/json",
-                dataType: dataType,
+                dataType,
                 context: this,
-                success: function(data) { cb(data); },
-                error: function(e) { log("API error: " + e); error(); }
+                success(data) { cb(data); },
+                error(e) { log("API error: " + e); error(); }
             });
         },
 
-        getList: function(url, options) {
+        getList(url, options) {
             return new GetListRequest(this, url, options);
         }
     });
 
     window.LV = new LV();
     window.LV.Utils = {
-        isoDate: isoDate
+        isoDate
     };
-})();
+}))();

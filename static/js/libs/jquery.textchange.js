@@ -5,32 +5,32 @@
  * Copyright 2010, ZURB
  * Released under the MIT License
  */
-(function ($) {
+(($ => {
 	
 	$.event.special.textchange = {
 		
-		setup: function (data, namespaces) {
+		setup(data, namespaces) {
 		  $(this).data('lastValue', this.contentEditable === 'true' ? $(this).html() : $(this).val());
 			$(this).bind('keyup.textchange', $.event.special.textchange.handler);
 			$(this).bind('cut.textchange paste.textchange input.textchange', $.event.special.textchange.delayedHandler);
 		},
 		
-		teardown: function (namespaces) {
+		teardown(namespaces) {
 			$(this).unbind('.textchange');
 		},
 		
-		handler: function (event) {
+		handler(event) {
 			$.event.special.textchange.triggerIfChanged($(this));
 		},
 		
-		delayedHandler: function (event) {
+		delayedHandler(event) {
 			var element = $(this);
-			setTimeout(function () {
+			setTimeout(() => {
 				$.event.special.textchange.triggerIfChanged(element);
 			}, 25);
 		},
 		
-		triggerIfChanged: function (element) {
+		triggerIfChanged(element) {
 		  var current = element[0].contentEditable === 'true' ? element.html() : element.val();
 			if (current !== element.data('lastValue')) {
 				element.trigger('textchange',  [element.data('lastValue')]);
@@ -41,15 +41,15 @@
 	
 	$.event.special.hastext = {
 		
-		setup: function (data, namespaces) {
+		setup(data, namespaces) {
 			$(this).bind('textchange', $.event.special.hastext.handler);
 		},
 		
-		teardown: function (namespaces) {
+		teardown(namespaces) {
 			$(this).unbind('textchange', $.event.special.hastext.handler);
 		},
 		
-		handler: function (event, lastValue) {
+		handler(event, lastValue) {
 			if ((lastValue === '') && lastValue !== $(this).val()) {
 				$(this).trigger('hastext');
 			}
@@ -58,19 +58,19 @@
 	
 	$.event.special.notext = {
 		
-		setup: function (data, namespaces) {
+		setup(data, namespaces) {
 			$(this).bind('textchange', $.event.special.notext.handler);
 		},
 		
-		teardown: function (namespaces) {
+		teardown(namespaces) {
 			$(this).unbind('textchange', $.event.special.notext.handler);
 		},
 		
-		handler: function (event, lastValue) {
+		handler(event, lastValue) {
 			if ($(this).val() === '' && $(this).val() !== lastValue) {
 				$(this).trigger('notext');
 			}
 		}
 	};	
 
-})(jQuery);
+}))(jQuery);
